@@ -7,7 +7,12 @@
     "test": "jest"
   },
   "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "express-stormpath": "^3.2.0",
+    "flux": "^3.1.2",
     "material-ui": "^0.18.1",
+    "native-base": "^2.1.4",
     "react": "16.0.0-alpha.6",
     "react-dom": "^15.5.4",
     "react-native": "0.44.0",

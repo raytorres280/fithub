@@ -1,29 +1,39 @@
 import React, { Component } from 'react';
 import { AnimatedGaugeProgress, GaugeProgress } from 'react-native-simple-gauge';
-
-import FlatButton from 'material-ui/FlatButton';
-
+import GlassList from './GlassOfWaterList.js';
+import MacrosTabStore from '../stores/MacrosTabStore';
+import MealsTab from './MealsTab';
 
 import {
   AppRegistry,
   StyleSheet,
   Text,
   View,
+  Image,
+  Modal,
+  TouchableHighlight
 } from 'react-native';
 
 export default class MacrosTab extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      proteinGaugeValue: 0,
-      carbGaugeValue: 0,
-      fatGaugeValue: 0
+      proteinGaugeValue: MacrosTabStore.getMacros.protein,
+      carbGaugeValue: MacrosTabStore.getMacros.carbs,
+      fatGaugeValue: MacrosTabStore.getMacros.fats,
+      modalVisible: false
     };
   }
 
+  setModalVisible(visible) {
+    this.setState({ modalVisible: visible });
+  }
   render() {
     return (
       <View style={styles.macrostab}>
+        <View style={styles.title}>
+          <Text allowFontScaling={false} style={styles.ticker}>1234</Text>
+        </View>
         <View style={styles.gauges}>
           <AnimatedGaugeProgress
             style={styles.proteinStyle}
@@ -31,9 +41,8 @@ export default class MacrosTab extends Component {
             width={25}
             fill={this.state.proteinGaugeValue}
             rotation={90}
-            cropDegree={180}
-            tintColor="#4682b4"
-            backgroundColor="#b0c4de"
+            cropDegree={0}
+            tintColor="#F39"
 
           />
           <AnimatedGaugeProgress
@@ -41,27 +50,60 @@ export default class MacrosTab extends Component {
             width={25}
             fill={this.state.carbGaugeValue}
             rotation={90}
-            cropDegree={180}
-            tintColor="#4682b4"
-            backgroundColor="#b0c4de"
+            cropDegree={0}
+            tintColor="#00BFFF"
           />
           <AnimatedGaugeProgress
             size={100}
             width={25}
             fill={this.state.fatGaugeValue}
             rotation={90}
-            cropDegree={180}
-            tintColor="#4682b4"
-            backgroundColor="#b0c4de"
+            cropDegree={0}
+            tintColor="#FC6"
           />
         </View>
         <View style={styles.gaugeLabels}>
           <Text>Protein</Text>
           <Text>Carbs</Text>
-          <Text>Fats</Text>
+          <Text style={{paddingLeft: 25}}>Fats</Text>
         </View>
-        <View style={styles.waterIntake}>
-          <Text>Water Intake</Text>
+        <View>
+          <GlassList />
+        </View>
+        <TouchableHighlight
+          onPress={() => {this.setModalVisible(!this.state.visible)}}
+          underlayColor="white"
+
+          >
+            <View
+              style={ styles.btn }
+              >
+                <Text>
+                  Test
+                </Text>
+            </View>
+          </TouchableHighlight>
+        <View style={{marginTop: 22}}>
+          <Modal
+            animationType={ "slide" }
+            transparent={ false }
+            visible={ this.state.modalVisible }
+            >
+              <View style={{ marginTop: 22 }}>
+                  <TouchableHighlight
+                    onPress={() => {this.setModalVisible(!this.state.modalVisible)}}
+                    underlayColor="white"
+                    >
+                    <View style={ styles.btn }>
+                      <Text>
+                        close
+                      </Text>
+                    </View>
+                  </TouchableHighlight>
+
+              </View>
+              <MealsTab />
+            </Modal>
         </View>
       </View>
     );
@@ -73,23 +115,32 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column'
   },
-  gauges: {
-    flex: 1,
+  ticker: {
+    fontSize: 100,
+    color: 'white',
+    backgroundColor: '#00D364'
+  },
+  title: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    marginTop: 20
+  },
+  gauges: {
+    flex: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'flex-end',
     padding: 10,
-    marginTop: 100
+    backgroundColor: 'powderblue'
   },
   gaugeLabels: {
-    flex: 1,
+    flex: 0,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10
-  },
-  waterIntake: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center'
+    justifyContent: 'space-around',
+    alignItems: 'stretch',
+    padding: 10,
+    paddingRight: 25,
+    backgroundColor: 'skyblue'
   },
   container: {
     flex: 1,
@@ -99,6 +150,13 @@ const styles = StyleSheet.create({
   },
   proteinStyle: {
     justifyContent: 'flex-start'
+  },
+  btn: {
+    backgroundColor: 'deepskyblue',
+    padding: 5,
+    borderWidth: 10,
+    borderRadius: 15,
+    borderColor: 'deepskyblue'
   }
 
 });
