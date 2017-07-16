@@ -71,7 +71,7 @@ export default class MacrosTab extends Component {
           <GlassList />
         </View>
         <TouchableHighlight
-          onPress={() => {this.setModalVisible(!this.state.visible)}}
+          onPress={() => {this.setModalVisible(!this.state.modalVisible)}}
           underlayColor="white"
 
           >

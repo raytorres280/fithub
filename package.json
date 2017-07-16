@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "flow": "flow"
   },
   "dependencies": {
     "body-parser": "^1.17.2",
+    "buffer": "^5.0.6",
     "express": "^4.15.3",
     "express-stormpath": "^3.2.0",
     "flux": "^3.1.2",
@@ -22,6 +24,10 @@
   "devDependencies": {
     "babel-jest": "20.0.1",
     "babel-preset-react-native": "1.9.2",
+    "eslint": "^4.2.0",
+    "eslint-plugin-react": "^7.1.0",
+    "eslint-plugin-react-native": "^2.3.2",
+    "flow-bin": "^0.42.0",
     "jest": "20.0.1",
     "react-test-renderer": "16.0.0-alpha.6"
   },

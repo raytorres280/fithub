@@ -46,7 +46,7 @@ class LogsStore extends EventEmitter {
   }
 
   handleActions(action) {
-    console.log('logsstore received an action.', action);
+    // console.log('logsstore received an action.', action);
     switch(action.type) {
       case 'ADD_LOG': {
         console.log('adding log to list...');
