@@ -25,7 +25,8 @@ export default class AppTabBar extends Component {
   constructor(props) {
     super(props);
     this.state={
-      tabSelected: 'macros'
+      tabSelected: 'macros',
+      user: props.user
     }
   }
   changeTab(tabId) {

@@ -20,7 +20,7 @@ export default class AppComponent extends Component {
     super(props);
     this.state={
       user: AppStore.getUser(),
-      isLoggedIn: false
+      isLoggedIn: AppStore.getIsLoggedIn()
     }
   }
 
@@ -36,6 +36,8 @@ export default class AppComponent extends Component {
           isLoggedIn: true
         });
 
+      } else {
+        //user not found
       }
     });
 
@@ -45,6 +47,7 @@ export default class AppComponent extends Component {
     console.log(this.state.user)
   }
   componentDidMount() {
+    let x = 0;
     console.log(this.state.user);
   }
   login(user) {
@@ -62,10 +65,9 @@ export default class AppComponent extends Component {
   }
 
   render() {
-    console.log(this.state.user);
     var component;
     if (this.state.isLoggedIn) {
-      component = <AppTabBar />
+      component = <AppTabBar user={this.state.user} />
     } else {
       component = <Login />
     }

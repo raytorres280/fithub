@@ -1,7 +1,7 @@
 import dispatcher from '../dispatcher/AppDispatcher';
 
 export function loginUser(user) {
-  console.log('inside the loginuser action method');
+  console.log('creating loginuser action');
   dispatcher.dispatch({
     type: 'LOGIN_USER',
     user

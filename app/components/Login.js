@@ -20,6 +20,7 @@ export default class Login extends Component {
       email: '',
       password: '',
       showProgress: false,
+      attemptedLogin: false
     }
   }
 
@@ -33,8 +34,7 @@ export default class Login extends Component {
       password: this.state.password
     }
     AppActions.loginUser(user);
-
-
+    this.setState({ attemptedLogin: true });
   }
 
   createAccount() {
@@ -42,9 +42,14 @@ export default class Login extends Component {
   }
 
   render() {
+    var errMsg;
+    if (this.state.attemptedLogin && !this.state.email) {
+      errMsg = <Text>'Login Failed. Email or pasword incorrect'</Text>
+    }
     return(
       <View style={styles.container}>
         <TextInput
+          autoCapitalize='none'
           style={styles.input}
           onChangeText={(text) => this.setState({email: text})}
           value={this.state.email}
@@ -75,6 +80,7 @@ export default class Login extends Component {
           animating={this.state.showProgress}
           size="large"
         />
+        { errMsg }
       </View>
     );
   }
