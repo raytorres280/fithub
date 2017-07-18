@@ -61,7 +61,7 @@ class AppStore extends EventEmitter {
     .then((resData) => {
       console.log('no errors');
       console.log(resData);
-
+      console.log(JSON.stringify(resData));
       if (!resData.url.includes('/failure')) {
         console.log('not a fail');
         this.setUser(user);

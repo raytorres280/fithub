@@ -42,7 +42,7 @@ export default class AppTabBar extends Component {
           icon={{uri: tabIcon1, scale: 4}}
           selected={this.state.tabSelected === 'macros'}
           >
-          <MacrosTab />
+          <MealsTab />
         </TabBarIOS.Item>
         <TabBarIOS.Item
           title="meals"
