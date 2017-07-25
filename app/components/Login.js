@@ -19,16 +19,17 @@ export default class Login extends Component {
     this.state = {
       email: '',
       password: '',
-      showProgress: false,
-      attemptedLogin: false
+      showProgress: false
     }
   }
 
+  componentWillMount() {
+    if(this.props.loginFailed) {
+      this.setState({ showProgress: false });
+    }
+  }
   loginUser() {
-    console.log('testing button');
     this.setState({showProgress: true});
-    console.log(this.state.email);
-    console.log(this.state.password);
     let user = {
       email: this.state.email,
       password: this.state.password
@@ -43,8 +44,8 @@ export default class Login extends Component {
 
   render() {
     var errMsg;
-    if (this.state.attemptedLogin && !this.state.email) {
-      errMsg = <Text>'Login Failed. Email or pasword incorrect'</Text>
+    if (this.props.loginFailed && !this.state.email) {
+      errMsg = <Text style={ styles.err }>'Login Failed. Email or pasword incorrect'</Text>
     }
     return(
       <View style={styles.container}>
@@ -115,5 +116,8 @@ const styles = {
     color: '#FFF',
     alignSelf: 'center',
   },
+  err: {
+    color: 'red'
+  }
 
 }

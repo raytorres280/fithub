@@ -10,6 +10,7 @@ class AppStore extends EventEmitter {
       password: ''
     },
     this.isLoggedIn = false;
+    this.loginFailed = false;
   }
 
   getUser() {
@@ -45,7 +46,6 @@ class AppStore extends EventEmitter {
       email: user.email,
       password: user.password
     }));
-    console.log('logging in user ');
     console.log(user);
     fetch('http://localhost:8080/auth/login', {
       method: 'POST',
@@ -58,22 +58,20 @@ class AppStore extends EventEmitter {
         password: user.password
       })
     })
+    .then((res) => res.json())
     .then((resData) => {
-      console.log('no errors');
       console.log(resData);
-      console.log(JSON.stringify(resData));
-      if (!resData.url.includes('/failure')) {
+      if(resData.email && resData.password) {
+        console.log('you have a user');
+        console.log('no errors');
+        console.log(resData);
+        console.log(JSON.stringify(resData));
         console.log('not a fail');
         this.setUser(user);
         this.setIsLoggedIn(true);
 
         console.log(this.user);
       }
-      else {
-        console.log('itsa  fail');
-      }
-
-
       console.log(this.user);
       this.emit('change');
     })
@@ -85,11 +83,16 @@ class AppStore extends EventEmitter {
   }
 
   handleActions(action) {
-    console.log('handling app store actions');
     switch (action.type) {
       case 'LOGIN_USER':
         //make methods for individual cases later.
         this.loginUser(action.user);
+        break;
+      case 'GET_USER':
+        this.getUser();
+        break;
+      case 'GET_IS_LOGGED_IN':
+        this.getIsLoggedIn();
         break;
       default:
         console.log('no case for action...');

@@ -11,45 +11,56 @@ import {
 import Login from './Login';
 import AppTabBar from './AppTabBar';
 
-import AppStore from '../stores/AppStore';
-import AppActions from '../actions/AppActions';
+import * as AppActions from '../actions/AppActions';
+import * as MealActions from '../actions/MealActions';
+import * as LogsTabActions from '../actions/LogsTabActions';
 
+import AppStore from '../stores/AppStore';
 
 export default class AppComponent extends Component {
   constructor(props) {
     super(props);
     this.state={
-      user: AppStore.getUser(),
-      isLoggedIn: AppStore.getIsLoggedIn()
+      user: '',
+      isLoggedIn: false,
+      loginFailed: false
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     AppStore.addListener('change', () => {
       console.log('change detected');
       let user = AppStore.getUser();
       if (user.email && user.password) {
-        console.log('in the if case.')
+        console.log('good password');
         console.log(user);
         this.setState({
           user: user,
           isLoggedIn: true
         });
-
+        //populate the lower level stores.
+        MealActions.getMeals(user);
+        LogsTabActions.getLogs(user);
       } else {
         //user not found
+          console.log('user not found');
+          this.setState({ loginFailed: true });
       }
     });
 
   }
 
   componentWillUpdate() {
-    console.log(this.state.user)
+    console.log('component will update');
+    //run api's for all the data for screens.
+
+    if (this.state.isLoggedIn) {
+      // on login, use apis
+      console.log('user is logged in, fetch API');
+
+    }
   }
-  componentDidMount() {
-    let x = 0;
-    console.log(this.state.user);
-  }
+
   login(user) {
     //do the api.
     //then set the state.
@@ -66,11 +77,14 @@ export default class AppComponent extends Component {
 
   render() {
     var component;
+    var errMsg;
     if (this.state.isLoggedIn) {
       component = <AppTabBar user={this.state.user} />
     } else {
-      component = <Login />
+      component = <Login loginFailed={ this.state.loginFailed }/>
     }
+
+
     return (
       <View style={styles.container}>
         { component }
@@ -83,6 +97,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
+  errMsg: {
+    color: 'red'
+  }
 });
 
 AppRegistry.registerComponent('MacroNative', () => MacroNative);

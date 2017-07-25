@@ -17,7 +17,7 @@ class MealsTabStore extends EventEmitter {
   }
 
   getMeals() {
-    return this.meals
+    return this.meals;
   }
 
   createMeal(meal) {
@@ -42,14 +42,21 @@ class MealsTabStore extends EventEmitter {
 
   }
 
+  getInitialMeals(user) {
+    console.log('fetching initial render info for meals from db..');
+  }
+
   handleActions(action) { //registered callback function for dispatcher.
     // console.log('mealtabstore received an action', action);
     switch(action.type) {
-      case 'ADD_MEAL_TO_LOG': {
+      case 'ADD_MEAL_TO_LOG':
         this.addMealToLog(action.meal);
-      }
-
+        break;
+      case 'GET_MEALS':
+        this.getMeals();
+        break;
     }
+    //end of switch statement
   }
 
 }

@@ -1,7 +1,6 @@
 import dispatcher from '../dispatcher/AppDispatcher';
 
 export function loginUser(user) {
-  console.log('creating loginuser action');
   dispatcher.dispatch({
     type: 'LOGIN_USER',
     user
@@ -23,4 +22,10 @@ setTimeout(() => {
   });
 }, 1000);
 
+}
+
+export function getUser() {
+  dispatcher.dispatch({
+    type: "GET_USER"
+  });
 }

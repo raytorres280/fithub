@@ -17,7 +17,7 @@ export default class Log extends Component {
     return (
       <View style={ styles.card }>
         <Text>
-          { this.props.id } {'\n'}
+          { this.props.date } {'\n'}
           { this.props.totalProtein } {'\n'}
           { this.props.totalCarbs } {'\n'}
           { this.props.totalFats } {'\n'}

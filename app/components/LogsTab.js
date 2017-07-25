@@ -11,8 +11,11 @@ import {
   TextInput
 } from 'react-native'
 
-import LogsStore from '../stores/LogsStore';
-import * as LogActions from '../actions/LogActions';
+import LogsTabStore from '../stores/LogsTabStore';
+
+import * as AppActions from '../actions/AppActions';
+import * as LogsTabActions from '../actions/LogsTabActions';
+
 import Log from './Log';
 
 
@@ -25,21 +28,32 @@ export default class LogsTab extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      logList: logs.cloneWithRows(LogsStore.getAll())
+      logList: logs
     }
   }
 
   componentWillMount() {
-    LogsStore.addListener('change', () => {
+    console.log(this.props.user);
+    let user = this.props.user;
+    let rows = LogsTabStore.getLogs();
+    if (rows == undefined) {
+      rows = []
+    }
+    this.setState({
+      logList: logs.cloneWithRows(rows)
+    });
+  }
+  componentDidMount() {
+    LogsTabStore.addListener('change', () => {
       this.setState({
-        logList: logs.cloneWithRows(LogsStore.getAll())
+        logList: logs.cloneWithRows(LogsStore.getLogs())
       });
     });
   }
 
   addLog(log) {
     console.log(log);
-    LogActions.addLog(log);
+    LogsTabActions.addLog(log);
 
   }
 
@@ -50,7 +64,7 @@ export default class LogsTab extends Component {
     // console.log(testLog); data still intact here..
 
     const testLog = {
-      id:Date.now(),
+      date:Date.now(),
       totalProtein: 20,
       totalCarbs: 20,
       totalFats: 20,
@@ -58,6 +72,8 @@ export default class LogsTab extends Component {
       totalCalories: 100
 
     }
+
+
     return(
       <View style={ styles.list }>
         <Button
@@ -69,7 +85,7 @@ export default class LogsTab extends Component {
           dataSource={ this.state.logList }
           renderRow={ (rowData) => {
             return <Log
-              id={ rowData.id }
+              id={ rowData.date }
               totalProtein={ rowData.totalProtein }
               totalCarbs={ rowData.totalCarbs }
               totalFats={ rowData.totalFats }

@@ -14,17 +14,8 @@ export function removeMealFromLog(meal) {
   });
 }
 
-export function getMenu() {
+export function getMeals() {
   dispatcher.dispatch({
-    type: "GET_MENU"
+    type: "GET_MEALS"
   });
-
-setTimeout(() => {
-  dispatcher.dispatch({
-    type: "RECEIVE_MENU",
-    menuItems
-
-  });
-}, 1000);
-
 }

@@ -26,7 +26,6 @@ export default class AppTabBar extends Component {
     super(props);
     this.state={
       tabSelected: 'macros',
-      user: props.user
     }
   }
   changeTab(tabId) {
@@ -42,7 +41,7 @@ export default class AppTabBar extends Component {
           icon={{uri: tabIcon1, scale: 4}}
           selected={this.state.tabSelected === 'macros'}
           >
-          <MealsTab />
+          <MacrosTab user={this.props.user}/>
         </TabBarIOS.Item>
         <TabBarIOS.Item
           title="meals"
@@ -50,7 +49,7 @@ export default class AppTabBar extends Component {
           icon={{uri: tabIcon2, scale: 4}}
           selected={this.state.tabSelected === 'meals'}
           >
-          <MealsTab />
+          <MealsTab user={this.props.user}/>
         </TabBarIOS.Item>
         <TabBarIOS.Item
           title="logs"
@@ -58,10 +57,10 @@ export default class AppTabBar extends Component {
           icon={{uri: tabIcon4, scale: 4}}
           selected={this.state.tabSelected === 'logs'}
           >
-          <LogsTab />
+          <LogsTab user={this.props.user}/>
         </TabBarIOS.Item>
         <TabBarIOS.Item
-          title="account"
+          title="account"props
           onPress={() => this.changeTab('account')}
           icon={{uri: tabIcon3, scale: 4}}
           selected={this.state.tabSelected === 'account'}>

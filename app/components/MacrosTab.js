@@ -25,6 +25,9 @@ export default class MacrosTab extends Component {
     };
   }
 
+  componentWillUnmount() {
+    console.log('this destroys when new tab opens..');
+  }
   setModalVisible(visible) {
     this.setState({ modalVisible: visible });
   }
@@ -34,7 +37,7 @@ export default class MacrosTab extends Component {
         <View style={styles.title}>
           <Text allowFontScaling={false} style={styles.ticker}>1234</Text>
         </View>
-        <View style={styles.gauges}>
+        {/* <View style={styles.gauges}>
           <AnimatedGaugeProgress
             style={styles.proteinStyle}
             size={100}
@@ -61,15 +64,17 @@ export default class MacrosTab extends Component {
             cropDegree={0}
             tintColor="#FC6"
           />
-        </View>
+        </View> */}
         <View style={styles.gaugeLabels}>
           <Text>Protein</Text>
           <Text>Carbs</Text>
           <Text style={{paddingLeft: 25}}>Fats</Text>
         </View>
+
         <View>
           <GlassList />
         </View>
+
         <TouchableHighlight
           onPress={() => {this.setModalVisible(!this.state.modalVisible)}}
           underlayColor="white"
@@ -83,6 +88,7 @@ export default class MacrosTab extends Component {
                 </Text>
             </View>
           </TouchableHighlight>
+
         <View style={{marginTop: 22}}>
           <Modal
             animationType={ "slide" }
