@@ -17,13 +17,22 @@ export default class Login extends Component {
     super(props);
     console.log('building the login screen');
     this.state = {
-      email: '',
-      password: '',
+      email: 'ross@aol.com',
+      password: 'root',
       showProgress: false
     }
   }
 
   componentWillMount() {
+    if(this.props.loginFailed) {
+      this.setState({ showProgress: false });
+    }
+  }
+  componentDidMount() {
+    this.loginUser();
+  }
+  componentWillUpdate() {
+    console.log('update lifecycle method..');
     if(this.props.loginFailed) {
       this.setState({ showProgress: false });
     }
@@ -35,7 +44,6 @@ export default class Login extends Component {
       password: this.state.password
     }
     AppActions.loginUser(user);
-    this.setState({ attemptedLogin: true });
   }
 
   createAccount() {
@@ -44,8 +52,9 @@ export default class Login extends Component {
 
   render() {
     var errMsg;
-    if (this.props.loginFailed && !this.state.email) {
+    if (this.props.loginFailed) {
       errMsg = <Text style={ styles.err }>'Login Failed. Email or pasword incorrect'</Text>
+      this.state.showProgress = false;
     }
     return(
       <View style={styles.container}>
@@ -78,6 +87,7 @@ export default class Login extends Component {
         </TouchableHighlight>
 
         <ActivityIndicator
+          style={styles.indicator}
           animating={this.state.showProgress}
           size="large"
         />
@@ -117,7 +127,11 @@ const styles = {
     alignSelf: 'center',
   },
   err: {
-    color: 'red'
+    color: 'red',
+    margin: 5
+  },
+  indicator: {
+    margin: 10
   }
 
 }

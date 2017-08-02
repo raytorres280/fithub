@@ -10,11 +10,16 @@ class LogsTabStore extends EventEmitter {
     super()
     this.logs = [
 
-    ]
+    ],
+    this.activeLog = null;
   }
 
   getLogs() {
     return this.logs;
+  }
+
+  getActiveLog() {
+    return this.activeLog;
   }
 
   addLog(log) {
@@ -30,10 +35,6 @@ class LogsTabStore extends EventEmitter {
     this.emit('change');
   }
 
-  getInitialLogs(user) {
-    console.log('fetching initial render info for logs from db..');
-  }
-
   handleActions(action) {
     // console.log('logsstore received an action.', action);
     switch(action.type) {
@@ -45,7 +46,22 @@ class LogsTabStore extends EventEmitter {
         break;
       case 'GET_LOGS':
         console.log('getting logs..');
+        console.log(action.logs);
         this.logs = action.logs;
+        this.logs = this.logs.sort().reverse();
+        console.log(new Date(this.logs[0].log_date).getMonth());
+        if (new Date(this.logs[0].log_date).getMonth() == new Date().getMonth()
+         && new Date(this.logs[0].log_date).getDay() == new Date().getDay()) {
+          console.log('this means that the latest date ' +
+          'from db is the current date');
+          
+
+        }
+        break;
+      case 'CREATE_LOG':
+      console.log('creating a log..');
+      this.logs.push(action.log);
+      break;
     }
   }
 }

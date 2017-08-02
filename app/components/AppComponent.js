@@ -45,6 +45,7 @@ export default class AppComponent extends Component {
         //user not found
           console.log('user not found');
           this.setState({ loginFailed: true });
+          render();
       }
     });
 

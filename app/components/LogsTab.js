@@ -43,6 +43,7 @@ export default class LogsTab extends Component {
       logList: logs.cloneWithRows(rows)
     });
   }
+  
   componentDidMount() {
     LogsTabStore.addListener('change', () => {
       this.setState({
@@ -86,11 +87,11 @@ export default class LogsTab extends Component {
           renderRow={ (rowData) => {
             return <Log
               id={ rowData.date }
-              totalProtein={ rowData.totalProtein }
-              totalCarbs={ rowData.totalCarbs }
-              totalFats={ rowData.totalFats }
-              totalWaterIntake={ rowData.totalWaterIntake }
-              totalActivity={ rowData.totalActivity }
+              totalProtein={ rowData.total_protein }
+              totalCarbs={ rowData.total_carbs }
+              totalFats={ rowData.total_fats }
+              totalWaterIntake={ rowData.total_water }
+              totalActivity={ rowData.total_activity }
 
             />
           }}

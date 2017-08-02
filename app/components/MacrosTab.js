@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AnimatedGaugeProgress, GaugeProgress } from 'react-native-simple-gauge';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import GlassList from './GlassOfWaterList.js';
 import MacrosTabStore from '../stores/MacrosTabStore';
 import MealsTab from './MealsTab';
@@ -18,9 +18,7 @@ export default class MacrosTab extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      proteinGaugeValue: MacrosTabStore.getMacros.protein,
-      carbGaugeValue: MacrosTabStore.getMacros.carbs,
-      fatGaugeValue: MacrosTabStore.getMacros.fats,
+      log: null,
       modalVisible: false
     };
   }
@@ -28,43 +26,56 @@ export default class MacrosTab extends Component {
   componentWillUnmount() {
     console.log('this destroys when new tab opens..');
   }
+
+  componentDidMount() {
+    LogsStore.addListener('change', () => {
+      console.log('the current log has changed.');
+      this.state.log = LogsTabStore.getActiveLog();
+    });
+  }
+
   setModalVisible(visible) {
     this.setState({ modalVisible: visible });
   }
   render() {
+    let proteins = 0,
+    carbs = 0,
+    fats = 0;
+    if(this.state.log != null) {
+      proteins = this.state.log.proteins;
+      carbs = this.state.log.carbs;
+      fats = this.state.log.fats;
+      console.log('in the if case.');
+    }
+    console.log(proteins);
     return (
       <View style={styles.macrostab}>
         <View style={styles.title}>
           <Text allowFontScaling={false} style={styles.ticker}>1234</Text>
         </View>
-        {/* <View style={styles.gauges}>
-          <AnimatedGaugeProgress
-            style={styles.proteinStyle}
+        <View style={styles.gauges}>
+          <AnimatedCircularProgress
             size={100}
-            width={25}
-            fill={this.state.proteinGaugeValue}
-            rotation={90}
-            cropDegree={0}
+            width={15}
+            fill={proteins}
             tintColor="#F39"
-
+            backgroundColor="#3d5875"
           />
-          <AnimatedGaugeProgress
+          <AnimatedCircularProgress
             size={100}
-            width={25}
-            fill={this.state.carbGaugeValue}
-            rotation={90}
-            cropDegree={0}
+            width={15}
+            fill={carbs}
             tintColor="#00BFFF"
+            backgroundColor="#3d5875"
           />
-          <AnimatedGaugeProgress
+          <AnimatedCircularProgress
             size={100}
-            width={25}
-            fill={this.state.fatGaugeValue}
-            rotation={90}
-            cropDegree={0}
+            width={15}
+            fill={fats}
             tintColor="#FC6"
+            backgroundColor="#3d5875"
           />
-        </View> */}
+        </View>
         <View style={styles.gaugeLabels}>
           <Text>Protein</Text>
           <Text>Carbs</Text>
@@ -80,12 +91,12 @@ export default class MacrosTab extends Component {
           underlayColor="white"
 
           >
-            <View
-              style={ styles.btn }
-              >
-                <Text>
-                  Test
-                </Text>
+            <View style={ styles.btn }>
+              <Text
+                fontSize={20}
+                >
+                Add Meal
+              </Text>
             </View>
           </TouchableHighlight>
 
@@ -122,6 +133,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column'
   },
   ticker: {
+    flex: 1,
     fontSize: 100,
     color: 'white',
     backgroundColor: '#00D364'
@@ -129,6 +141,7 @@ const styles = StyleSheet.create({
   title: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 20
   },
   gauges: {
@@ -159,11 +172,38 @@ const styles = StyleSheet.create({
   },
   btn: {
     backgroundColor: 'deepskyblue',
-    padding: 5,
+    margin: 5,
     borderWidth: 10,
-    borderRadius: 15,
-    borderColor: 'deepskyblue'
-  }
+    borderRadius: 5,
+    borderColor: 'deepskyblue',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }/* Rectangle: */
+// background: #F9FAFB;
+// box-shadow: 0 26px 90px 0 rgba(51,59,69,0.10), 0 0 20px 0 rgba(215,222,227,0.39);
+// border-radius: 10px;
+// /* Strategy.pdf: */
+// font-family: .AppleSystemUIFont;
+// font-size: 15px;
+// color: #434B52;
+// letter-spacing: 0;
+// /* LAST EDITED JUN 28,: */
+// font-family: .AppleSystemUIFont;
+// font-size: 9px;
+// color: #1F8EFA;
+// letter-spacing: 2px;
+// /* Shape: */
+// background: #526C8B;
+// /* Shape: */
+// border: 2px solid #526C8B;
+// /* Shape: */
+// border: 2px solid #526C8B;
+// /* Shape: */
+// border: 2px solid #526C8B;
+// /* Shape: */
+// border: 2px solid #526C8B;
+// /* Shape: */
+// border: 2px solid #526C8B;
 
 });
 

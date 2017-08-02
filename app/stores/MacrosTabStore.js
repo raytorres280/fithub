@@ -3,9 +3,9 @@ import EventEmitter from 'EventEmitter';
 class MacrosTabStore extends EventEmitter {
   constructor() {
     super()
-    this.protein = 0;
-    this.carbs = 0;
-    this.fats = 0;
+    this.protein = 25;
+    this.carbs = 40;
+    this.fats = 75;
     this.calories = 0;
     this.water = 0; //8x8  or 16.9rule measured in ounces. 4 bottles of water.
     this.miles = 0;

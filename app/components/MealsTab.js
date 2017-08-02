@@ -12,30 +12,43 @@ import MealsTabStore from '../stores/MealsTabStore';
 import Meal from './Meal';
 import MealActions from '../actions/MealActions';
 
-const meals = new ListView.DataSource({rowHasChanged:(r1,r2) => r1 != r2})
+const meals = new ListView.DataSource({rowHasChanged:(r1,r2) => r1 != r2});
 
 export default class MealsTab extends Component {
 
   constructor() {
     super();
     this.state = {
-      meals: meals.cloneWithRows(MealsTabStore.getMeals())
+      mealList: meals
     }
   }
 
   componentWillMount() {
-    // MealsTabStore.on('change', () => {
-    //   this.setState({
-    //     meals: meals.cloneWithRows(MealsTabStore.getMeals())
-    //   });
-    // });
+    console.log(this.props.user);
+    let user = this.props.user;
+    let rows = MealsTabStore.getMeals();
+    if (rows == undefined) {
+      rows = []
+    }
+    this.setState({
+      mealList: meals.cloneWithRows(rows)
+    });
+  }
+
+  componentDidMount() {
+    MealsTabStore.addListener('change', () => {
+      let rows = MealsTabStore.getMeals();
+      this.setState({
+        mealList: meals.cloneWithRows(rows)
+      });
+    });
   }
 
   render() {
     return(
       <View style={styles.list}>
         <ListView
-          dataSource={this.state.meals}
+          dataSource={this.state.mealList}
           renderRow={(rowData => {
             return <Meal
               id={rowData.id}

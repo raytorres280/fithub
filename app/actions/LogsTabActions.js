@@ -15,6 +15,13 @@ export function removeLog(log) {
   });
 }
 
+export function createLog() {
+  dispatcher.dispatch({
+    type: 'CREATE_LOG',
+    log
+  });
+}
+
 export function getLogs(user) {
   fetch('http://localhost:8080/api/logs', {
     method: 'POST',

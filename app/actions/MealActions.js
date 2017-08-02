@@ -15,7 +15,19 @@ export function removeMealFromLog(meal) {
 }
 
 export function getMeals() {
-  dispatcher.dispatch({
-    type: "GET_MEALS"
+  fetch('http://localhost:8080/api/meals')
+  .then((res) => res.json())
+  .then((response) => {
+    let meals = response;
+    console.log(meals);
+    dispatcher.dispatch({
+      type: "GET_MEALS",
+      meals
+    });
+  })
+  .catch((err) => {
+    console.log(err);
   });
+
+
 }

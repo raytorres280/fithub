@@ -11,6 +11,12 @@ class AppStore extends EventEmitter {
     },
     this.isLoggedIn = false;
     this.loginFailed = false;
+    this.date = new Date();
+  }
+
+  checkDate(date) {
+    //if the date retrieved from latest log (sorted) is not the
+    //current date, create a new log.
   }
 
   getUser() {
@@ -95,7 +101,7 @@ class AppStore extends EventEmitter {
         this.getIsLoggedIn();
         break;
       default:
-        console.log('no case for action...');
+        console.log('no case for action...' + action.type);
 
     }
   }
