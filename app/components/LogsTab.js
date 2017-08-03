@@ -43,11 +43,11 @@ export default class LogsTab extends Component {
       logList: logs.cloneWithRows(rows)
     });
   }
-  
+
   componentDidMount() {
     LogsTabStore.addListener('change', () => {
       this.setState({
-        logList: logs.cloneWithRows(LogsStore.getLogs())
+        logList: logs.cloneWithRows(LogsTabStore.getLogs())
       });
     });
   }
@@ -86,6 +86,7 @@ export default class LogsTab extends Component {
           dataSource={ this.state.logList }
           renderRow={ (rowData) => {
             return <Log
+              key={rowData.id}
               id={ rowData.date }
               totalProtein={ rowData.total_protein }
               totalCarbs={ rowData.total_carbs }

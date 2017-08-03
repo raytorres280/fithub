@@ -36,8 +36,7 @@ class MealsTabStore extends EventEmitter {
   }
 
   addMealToLog(meal) {
-    console.log('adding meal to daily log...');
-
+    console.log('adding meal to list...');
     //do date check in here and add to according user's log after date check.
 
   }

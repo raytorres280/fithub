@@ -7,7 +7,8 @@ class AppStore extends EventEmitter {
     super();
     this.user = {
       email: '',
-      password: ''
+      password: '',
+      id: -1
     },
     this.isLoggedIn = false;
     this.loginFailed = false;
@@ -18,7 +19,6 @@ class AppStore extends EventEmitter {
     //if the date retrieved from latest log (sorted) is not the
     //current date, create a new log.
   }
-
   getUser() {
     console.log('in the get user method of store..');
     // fetch('api_goes_here').then((res) => {
@@ -30,7 +30,6 @@ class AppStore extends EventEmitter {
     // });
     return this.user;
   }
-
   setUser(usr) {
     console.log('in the setUser method of the store..');
 
@@ -73,7 +72,7 @@ class AppStore extends EventEmitter {
         console.log(resData);
         console.log(JSON.stringify(resData));
         console.log('not a fail');
-        this.setUser(user);
+        this.setUser(resData);
         this.setIsLoggedIn(true);
 
         console.log(this.user);

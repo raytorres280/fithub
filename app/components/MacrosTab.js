@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import GlassList from './GlassOfWaterList.js';
 import MacrosTabStore from '../stores/MacrosTabStore';
+import LogsTabStore from '../stores/LogsTabStore';
 import MealsTab from './MealsTab';
 
 import {
@@ -18,7 +19,7 @@ export default class MacrosTab extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      log: null,
+      log: LogsTabStore.getActiveLog(),
       modalVisible: false
     };
   }
@@ -28,23 +29,30 @@ export default class MacrosTab extends Component {
   }
 
   componentDidMount() {
-    LogsStore.addListener('change', () => {
+    LogsTabStore.addListener('change', () => {
       console.log('the current log has changed.');
-      this.state.log = LogsTabStore.getActiveLog();
+      console.log(LogsTabStore.getActiveLog());
+      this.setState({
+        log: LogsTabStore.getActiveLog()
+      });
     });
   }
 
   setModalVisible(visible) {
     this.setState({ modalVisible: visible });
   }
+
+  addMealToLog(meal) {
+    LogsTabActions.addMealToLog(meal);
+  }
   render() {
     let proteins = 0,
     carbs = 0,
     fats = 0;
     if(this.state.log != null) {
-      proteins = this.state.log.proteins;
-      carbs = this.state.log.carbs;
-      fats = this.state.log.fats;
+      proteins = this.state.log.total_protein;
+      carbs = this.state.log.total_carbs;
+      fats = this.state.log.total_fats;
       console.log('in the if case.');
     }
     console.log(proteins);

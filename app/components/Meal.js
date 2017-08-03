@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { View, StyleSheet, Text, Image, Button } from 'react-native'
 
 import MealsTabStore from '../stores/MealsTabStore';
+import LogsTabStore from '../stores/LogsTabStore';
 import * as MealActions from '../actions/MealActions';
 
 export default class Meal extends Component {
@@ -12,7 +13,13 @@ export default class Meal extends Component {
   }
 
   addMealToLog() {
-
+    console.log('adding meal to log');
+    console.log(this.props);
+    let mealLog = {
+      log_id: LogsTabStore.getActiveLog().id,
+      meal_id: this.props.id,
+    }
+    MealActions.addMealToLog(mealLog);
   }
 
   render() {
@@ -23,7 +30,7 @@ export default class Meal extends Component {
             style={{ width:64 , height: 64 }}
             source={{ uri: addIcon, scale: 1 }}
           />
-          <Button title="Add" color="purple" onPress={() => console.log('meal added.')}/>
+          <Button title="Add" color="purple" onPress={() => this.addMealToLog()}/>
       </View>
     )
   }

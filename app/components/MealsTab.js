@@ -45,6 +45,7 @@ export default class MealsTab extends Component {
   }
 
   render() {
+    console.log(this.state.mealList);
     return(
       <View style={styles.list}>
         <ListView
