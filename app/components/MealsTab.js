@@ -64,7 +64,7 @@ export default class MealsTab extends Component {
 }
 const styles = StyleSheet.create({
   list:{
-    backgroundColor: "teal",
+    backgroundColor: '#f0f8ff',
     flex: 1
   } //dont style container here. only things within container.
 })

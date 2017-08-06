@@ -19,6 +19,7 @@ export default class Meal extends Component {
       log_id: LogsTabStore.getActiveLog().id,
       meal_id: this.props.id,
     }
+    console.log(mealLog);
     MealActions.addMealToLog(mealLog);
   }
 
@@ -30,7 +31,11 @@ export default class Meal extends Component {
             style={{ width:64 , height: 64 }}
             source={{ uri: addIcon, scale: 1 }}
           />
-          <Button title="Add" color="purple" onPress={() => this.addMealToLog()}/>
+          <Button
+            title="Add"
+            color="purple"
+            onPress={() => this.addMealToLog()}
+          />
       </View>
     )
   }

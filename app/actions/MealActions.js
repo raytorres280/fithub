@@ -1,6 +1,7 @@
 import dispatcher from '../dispatcher/AppDispatcher';
 
 export function addMealToLog(mealLog) {
+  console.log(JSON.stringify(mealLog));
   fetch('http://localhost:8080/api/meal-logs', {
     method: 'POST',
     headers: {
@@ -12,11 +13,14 @@ export function addMealToLog(mealLog) {
   .then((response) => response.json())
   .then((res) => {
     console.log(res);
-    let meal = res;
+    let meals = res;
     dispatcher.dispatch({
-      type: 'ADD_MEAL_TO_LOG',
-      meal
+      type: 'REFRESH_LOGS',
+      meals
     });
+  })
+  .catch((err) => {
+    console.log(err);
   });
 }
 

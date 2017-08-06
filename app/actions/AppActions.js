@@ -7,20 +7,10 @@ export function loginUser(user) {
   });
 }
 
-export function logoutUser(user) {
+export function logoutUser() {
   dispatcher.dispatch({
-    type: 'LOGOUT_USER',
-    user
+    type: 'LOGOUT_USER'
   });
-
-
-setTimeout(() => {
-  dispatcher.dispatch({
-    type: "RECEIVE_MENU",
-    menuItems
-
-  });
-}, 1000);
 
 }
 

@@ -8,7 +8,11 @@ class AppStore extends EventEmitter {
     this.user = {
       email: '',
       password: '',
-      id: -1
+      id: -1,
+      name: '',
+      age: 0,
+      height: 0,
+      weight: 0
     },
     this.isLoggedIn = false;
     this.loginFailed = false;
@@ -99,6 +103,9 @@ class AppStore extends EventEmitter {
       case 'GET_IS_LOGGED_IN':
         this.getIsLoggedIn();
         break;
+      case 'LOGOUT_USER':
+        this.user = null;
+        this.emit('change');
       default:
         console.log('no case for action...' + action.type);
 

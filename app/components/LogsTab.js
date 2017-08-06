@@ -77,17 +77,14 @@ export default class LogsTab extends Component {
 
     return(
       <View style={ styles.list }>
-        <Button
-          title='add Log'
-          color='red'
-          onPress={() => this.addLog(testLog)}
-        />
         <ListView
           dataSource={ this.state.logList }
           renderRow={ (rowData) => {
+            console.log(rowData);
             return <Log
-              key={rowData.id}
-              id={ rowData.date }
+              key={ rowData.id }
+              id={ rowData.id }
+              date={ rowData.log_date }
               totalProtein={ rowData.total_protein }
               totalCarbs={ rowData.total_carbs }
               totalFats={ rowData.total_fats }
@@ -105,7 +102,7 @@ export default class LogsTab extends Component {
 
 const styles = StyleSheet.create({
   list: {
-    backgroundColor: 'blue',
+    backgroundColor: '#3498db',
     flex: 1
   },
   button: {

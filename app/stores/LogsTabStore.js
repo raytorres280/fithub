@@ -12,11 +12,15 @@ import * as LogsTabActions from '../actions/LogsTabActions';
 class LogsTabStore extends EventEmitter {
   constructor() {
     super()
-    this.user = {};
+    this.user = AppStore.getUser();
     this.logs = [
 
     ];
     this.activeLog = null;
+  }
+
+  getUser() {
+    return this.user;
   }
 
   getLogs() {
@@ -45,6 +49,7 @@ class LogsTabStore extends EventEmitter {
     console.log(logs);
     this.logs = logs;
     this.logs = this.logs.sort().reverse();
+    console.log(logs);
     console.log(new Date(this.logs[0].log_date).getMonth());
 
 
@@ -95,7 +100,7 @@ class LogsTabStore extends EventEmitter {
 
   }
   handleActions(action) {
-    // console.log('logsstore received an action.', action);
+    console.log('logsstore received an action.', action);
     switch(action.type) {
       case 'ADD_LOG':
         console.log('adding log to list...');
@@ -113,9 +118,20 @@ class LogsTabStore extends EventEmitter {
         this.logs.push(action.log);
         break;
       case 'ADD_MEAL_TO_LOG':
-        LogsTabActions.getLogs(this.user); 
+        LogsTabActions.getLogs(this.user);
         //later do something with active log, instead of refetching fresh set.
         //maybe search active by id, re render that one after proc calls.
+        break;
+      case 'REFRESH_LOGS':
+        console.log('updating log list..');
+        console.log(action.meals[0]);
+        let newMealList = action.meals[0].sort().reverse();
+        console.log(newMealList);
+        this.logs = newMealList;
+        this.activeLog = newMealList[0];
+        this.emit('change');
+        break;
+
     }
   }
 }

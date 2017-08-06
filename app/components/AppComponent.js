@@ -31,6 +31,15 @@ export default class AppComponent extends Component {
     AppStore.addListener('change', () => {
       console.log('change detected');
       let user = AppStore.getUser();
+
+      if(user == null) {
+        this.setState({
+          isLoggedIn: false,
+          user: ''
+        });
+        return 0;
+      }
+
       if (user.email && user.password) {
         console.log('good password');
         console.log(user);

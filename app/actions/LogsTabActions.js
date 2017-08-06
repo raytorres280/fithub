@@ -54,15 +54,21 @@ export function getLogs(user) {
 }
 
 export function addMealToLog(mealLog) {
-  // fetch('http://localhost:8080/api/meal-logs', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Accept': 'application/json',
-  //     'Content-Type': 'application/json'
-  //   },
-  //   body: JSON.stringify(mealLog)
-  // })
-  // .then()
+  fetch('http://localhost:8080/api/meal-logs', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(mealLog)
+  })
+  .then((res) => res.json())
+  .then((resJson) => {
+    console.log(resJson);;
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 
 }

@@ -14,7 +14,7 @@ export default class GlassList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      waterIntake: 0,
+      waterIntake: this.props.water,
       glasses: [
         {isfull: false},
         {isfull: false},
@@ -55,7 +55,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'steelblue',
     padding: 5
   }
 });

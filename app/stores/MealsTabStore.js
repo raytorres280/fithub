@@ -48,9 +48,6 @@ class MealsTabStore extends EventEmitter {
   handleActions(action) { //registered callback function for dispatcher.
     // console.log('mealtabstore received an action', action);
     switch(action.type) {
-      case 'ADD_MEAL_TO_LOG':
-        this.addMealToLog(action.meal);
-        break;
       case 'GET_MEALS':
         if(action.meals) {
           console.log(action.meals);

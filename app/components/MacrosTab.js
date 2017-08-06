@@ -42,24 +42,30 @@ export default class MacrosTab extends Component {
     this.setState({ modalVisible: visible });
   }
 
-  addMealToLog(meal) {
-    LogsTabActions.addMealToLog(meal);
-  }
+  // addMealToLog(meal) {
+  //   LogsTabActions.addMealToLog(meal);
+  // }
   render() {
     let proteins = 0,
     carbs = 0,
-    fats = 0;
+    fats = 0,
+    calories = 0,
+    water = 0;
+
     if(this.state.log != null) {
       proteins = this.state.log.total_protein;
       carbs = this.state.log.total_carbs;
       fats = this.state.log.total_fats;
+      calories = this.state.log.total_calories;
+      water = this.state.log.total_water;
+
       console.log('in the if case.');
     }
     console.log(proteins);
     return (
       <View style={styles.macrostab}>
         <View style={styles.title}>
-          <Text allowFontScaling={false} style={styles.ticker}>1234</Text>
+          <Text allowFontScaling={false} style={styles.ticker}>{calories}</Text>
         </View>
         <View style={styles.gauges}>
           <AnimatedCircularProgress
@@ -90,8 +96,8 @@ export default class MacrosTab extends Component {
           <Text style={{paddingLeft: 25}}>Fats</Text>
         </View>
 
-        <View>
-          <GlassList />
+        <View style={styles.glassListContainer}>
+          <GlassList water={water}/>
         </View>
 
         <TouchableHighlight
@@ -141,16 +147,21 @@ const styles = StyleSheet.create({
     flexDirection: 'column'
   },
   ticker: {
-    flex: 1,
     fontSize: 100,
     color: 'white',
-    backgroundColor: '#00D364'
+    backgroundColor: '#00D364',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   title: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20
+    marginTop: 20,
+    backgroundColor: '#00D364',
+    borderRadius: 10,
+    marginLeft: 10,
+    marginRight: 10
   },
   gauges: {
     flex: 0,
@@ -158,7 +169,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'flex-end',
     padding: 10,
-    backgroundColor: 'powderblue'
+    backgroundColor: '#ecf0f1',
+    borderRadius: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 10,
   },
   gaugeLabels: {
     flex: 0,
@@ -167,7 +182,15 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     padding: 10,
     paddingRight: 25,
-    backgroundColor: 'skyblue'
+  },
+  glassListContainer: {
+    backgroundColor: '#3498db',
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderRadius: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 10,
   },
   container: {
     flex: 1,
@@ -179,40 +202,17 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start'
   },
   btn: {
+    height: 50,
     backgroundColor: 'deepskyblue',
-    margin: 5,
+    marginTop: 10,
+    marginLeft: 10,
+    marginRight: 10,
     borderWidth: 10,
     borderRadius: 5,
     borderColor: 'deepskyblue',
     justifyContent: 'center',
     alignItems: 'center'
-  }/* Rectangle: */
-// background: #F9FAFB;
-// box-shadow: 0 26px 90px 0 rgba(51,59,69,0.10), 0 0 20px 0 rgba(215,222,227,0.39);
-// border-radius: 10px;
-// /* Strategy.pdf: */
-// font-family: .AppleSystemUIFont;
-// font-size: 15px;
-// color: #434B52;
-// letter-spacing: 0;
-// /* LAST EDITED JUN 28,: */
-// font-family: .AppleSystemUIFont;
-// font-size: 9px;
-// color: #1F8EFA;
-// letter-spacing: 2px;
-// /* Shape: */
-// background: #526C8B;
-// /* Shape: */
-// border: 2px solid #526C8B;
-// /* Shape: */
-// border: 2px solid #526C8B;
-// /* Shape: */
-// border: 2px solid #526C8B;
-// /* Shape: */
-// border: 2px solid #526C8B;
-// /* Shape: */
-// border: 2px solid #526C8B;
-
+  }
 });
 
 AppRegistry.registerComponent('MacrosTab', () => MacrosTab);
