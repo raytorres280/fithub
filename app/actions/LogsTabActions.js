@@ -72,3 +72,31 @@ export function addMealToLog(mealLog) {
 
 
 }
+
+export function drinkWater(logId) {
+  fetch('http://localhost:8080/api/water', {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(logId)
+  })
+  .then((res) => res.json())
+  .then((resJson) => {
+    console.log('drank water..');
+    console.log(resJson);
+    let water = {
+      isFull: true
+    }
+    dispatcher.dispatch({
+      type: 'DRINK_WATER',
+      water
+    });
+  })
+  .catch((err) => {
+    if(err) {
+      throw err;
+    }
+  })
+}

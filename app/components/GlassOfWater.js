@@ -20,7 +20,8 @@ export default class GlassFullIcon extends Component {
   }
   fillGlass() {
     //later add posibility to read user property that determines bottles vs cups.
-    MacrosTabStore.drinkWater();
+    // MacrosTabStore.drinkWater();
+    // LogsTabAction.drinkWater();
     this.setState({isFull: true});
   }
   emptyGlass() {

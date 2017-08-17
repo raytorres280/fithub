@@ -4,6 +4,7 @@ import GlassList from './GlassOfWaterList.js';
 import MacrosTabStore from '../stores/MacrosTabStore';
 import LogsTabStore from '../stores/LogsTabStore';
 import MealsTab from './MealsTab';
+import * as LogsTabActions from '../actions/LogsTabActions';
 
 import {
   AppRegistry,
@@ -45,6 +46,10 @@ export default class MacrosTab extends Component {
   // addMealToLog(meal) {
   //   LogsTabActions.addMealToLog(meal);
   // }
+
+  drinkWater() {
+    LogsTabActions.drinkWater(this.state.log.user_id);
+  }
   render() {
     let proteins = 0,
     carbs = 0,

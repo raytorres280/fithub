@@ -17,8 +17,8 @@ export default class Login extends Component {
     super(props);
     console.log('building the login screen');
     this.state = {
-      email: '',
-      password: '',
+      email: 'ray@aol.com',
+      password: 'root',
       showProgress: false
     }
   }
@@ -28,9 +28,9 @@ export default class Login extends Component {
       this.setState({ showProgress: false });
     }
   }
-  // componentDidMount() {
-  //   this.loginUser();
-  // }
+  componentDidMount() {
+    this.loginUser();
+  }
   componentWillUpdate() {
     console.log('update lifecycle method..');
     if(this.props.loginFailed) {

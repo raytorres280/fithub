@@ -16,14 +16,14 @@ export default class GlassList extends Component {
     this.state = {
       waterIntake: this.props.water,
       glasses: [
-        {isfull: false},
-        {isfull: false},
-        {isfull: false},
-        {isfull: false}, //change later? 8 by 8 rule for now. static
-        {isfull: false}, // maybe do it by weight or gender. gender little bit easier.
-        {isfull: false}, //maybe change glasses to an int and spit out water glass components
-        {isfull: false},
-        {isfull: false}
+        {isFull: false},
+        {isFull: false},
+        {isFull: false},
+        {isFull: false}, //change later? 8 by 8 rule for now. static
+        {isFull: false}, // maybe do it by weight or gender. gender little bit easier.
+        {isFull: false}, //maybe change glasses to an int and spit out water glass components
+        {isFull: false},
+        {isFull: false}
       ]
     }
   }

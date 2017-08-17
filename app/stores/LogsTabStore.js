@@ -17,6 +17,16 @@ class LogsTabStore extends EventEmitter {
 
     ];
     this.activeLog = null;
+    this.activeLogWater = [
+      {isFull: false},
+      {isFull: false},
+      {isFull: false},
+      {isFull: false}, //change later? 8 by 8 rule for now. static
+      {isFull: false}, // maybe do it by weight or gender. gender little bit easier.
+      {isFull: false}, //maybe change glasses to an int and spit out water glass components
+      {isFull: false},
+      {isFull: false}
+    ]
   }
 
   getUser() {
@@ -31,28 +41,53 @@ class LogsTabStore extends EventEmitter {
     return this.activeLog;
   }
 
-  addLog(log) {
-    this.logs.push({
-      date: Date('Dec 24, 1984'),
-      totalProtein: log.totalProtein,
-      totalCarbs: log.totalCarbs,
-      totalFats: log.totalFats,
-      totalWaterIntake: log.totalWaterIntake,
-      totalCalories: log.totalCalories
+  addLog() {
+    let log = {
+      total_calories: 0,
+      total_protein: 0,
+      total_carbs: 0,
+      total_fats: 0,
+      total_water: 0,
+      total_activity: 0,
+      weigh_in: 0,
+      user_id: AppStore.getUser().id,
+      log_date: new Date()
+    };
+    fetch('http://localhost:8080/api/createLog', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(log)
+    })
+    .then((res) => res.json())
+    .then((response) => {
+      // console.log(response);
+      console.log('got response');
+      let logs = response;
+      // console.log(logs);
+      //probably should remove this later, getting whole list of logs
+      //just to refresh for newest one...
+      dispatcher.dispatch({
+        type: 'GET_LOGS',
+        logs
+      });
     });
-
-    this.emit('change');
   }
 
-  loadInitialLogs(logs) {
+  loadLogs(logs) {
     console.log('getting logs..');
     console.log(logs);
-    this.logs = logs;
-    this.logs = this.logs.sort().reverse();
+    this.logs = logs.sort().reverse();
     console.log(logs);
+    // console.log(new Date(this.logs[0].log_date).getMonth());
+    if(logs[0] == null) {
+      console.log('you have an empty arry');
+      this.addLog();
+      return 0;
+    }
     console.log(new Date(this.logs[0].log_date).getMonth());
-
-
     if (new Date(this.logs[0].log_date).getMonth() == new Date().getMonth()
      && new Date(this.logs[0].log_date).getDay() == new Date().getDay()) {
       console.log('this means that the latest date ' +
@@ -60,44 +95,23 @@ class LogsTabStore extends EventEmitter {
       this.activeLog = this.logs[0];
       this.emit('change');
       console.log(this.activeLog);
+
+      // this.activeLog.total_water
     }
     else {
       console.log("or it's not the latest and you have to create a new one");
-      let log = {
-        total_calories: 0,
-        total_protein: 0,
-        total_carbs: 0,
-        total_fats: 0,
-        total_water: 0,
-        total_activity: 0,
-        weigh_in: 0,
-        user_id: AppStore.getUser().id,
-        log_date: new Date()
-      };
-      fetch('http://localhost:8080/api/createLog', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(log)
-      })
-      .then((res) => res.json())
-      .then((response) => {
-        // console.log(response);
-        console.log('got response');
-        var logs = response;
-        // console.log(logs);
-        //probably should remove this later, getting whole list of logs
-        //just to refresh for newest one...
-        dispatcher.dispatch({
-          type: 'GET_LOGS',
-          logs
-        });
-      });
+      this.addLog();
     }
 
 
+  }
+
+  drinkWater() {
+    for (let cup in activeLogWater) {
+      if (!cup.isFull) {
+        cup.isFull = true;
+      }
+    }
   }
   handleActions(action) {
     console.log('logsstore received an action.', action);
@@ -109,8 +123,8 @@ class LogsTabStore extends EventEmitter {
         this.emit('change');
         break;
       case 'GET_LOGS':
-        this.loadInitialLogs(action.logs);
-        this.emit('change');
+        this.loadLogs(action.logs);
+        // this.emit('change');
         break;
       case 'CREATE_LOG':
       //deprecate, you never need to create one other than initial load.
@@ -131,7 +145,10 @@ class LogsTabStore extends EventEmitter {
         this.activeLog = newMealList[0];
         this.emit('change');
         break;
-
+      case 'DRINK_WATER':
+        console.log('drinking water..');
+        drinkWater();
+        this.emit('change');
     }
   }
 }

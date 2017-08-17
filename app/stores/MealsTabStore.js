@@ -6,13 +6,6 @@ class MealsTabStore extends EventEmitter {
   constructor() {
     super()
     this.meals = [
-      //change this to http req service later...dynamically populate array.
-      // {id: 1, name: 'chix sandwich', protein: 30, carbs: 20, fats: 10, calories: 700},
-      // {id: 2, name: 'fish tacos', protein: 30, carbs: 10, fats: 20, calories: 500},
-      // {id: 3, name: 'pizza', protein: 8, carbs: 30, fats: 30, calories: 600},
-      // {id: 4, name: 'yams', protein: 4, carbs: 50, fats: 4, calories: 400},
-      // {id: 5, name: 'cake', protein: 8, carbs: 60, fats: 40, calories: 800},
-      // {id: 6, name: 'burger', protein: 20, carbs: 28, fats: 12, calories: 1200}
     ]
   }
 
