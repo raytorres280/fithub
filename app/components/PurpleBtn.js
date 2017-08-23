@@ -14,7 +14,7 @@ export default class PurpleBtn extends Component {
     super(props);
   }
   _handlePress() {
-    console.log('Pressed!');
+    //console.log('Pressed!');
   }
   render() {
     return (

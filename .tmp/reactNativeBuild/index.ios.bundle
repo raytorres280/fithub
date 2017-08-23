@@ -47788,13 +47788,21 @@ var _AppTabBar = require(424          ); // 424 = ./AppTabBar
 
 var _AppTabBar2 = babelHelpers.interopRequireDefault(_AppTabBar);
 
+var _AppActions = require(419                    ); // 419 = ../actions/AppActions
+
+var AppActions = babelHelpers.interopRequireWildcard(_AppActions);
+
+var _MealActions = require(440                     ); // 440 = ../actions/MealActions
+
+var MealActions = babelHelpers.interopRequireWildcard(_MealActions);
+
+var _LogsTabActions = require(436                        ); // 436 = ../actions/LogsTabActions
+
+var LogsTabActions = babelHelpers.interopRequireWildcard(_LogsTabActions);
+
 var _AppStore = require(423                 ); // 423 = ../stores/AppStore
 
 var _AppStore2 = babelHelpers.interopRequireDefault(_AppStore);
-
-var _AppActions = require(419                    ); // 419 = ../actions/AppActions
-
-var _AppActions2 = babelHelpers.interopRequireDefault(_AppActions);
 
 var AppComponent = function (_Component) {
   babelHelpers.inherits(AppComponent, _Component);
@@ -47805,20 +47813,30 @@ var AppComponent = function (_Component) {
     var _this = babelHelpers.possibleConstructorReturn(this, (AppComponent.__proto__ || Object.getPrototypeOf(AppComponent)).call(this, props));
 
     _this.state = {
-      user: _AppStore2.default.getUser(),
-      isLoggedIn: _AppStore2.default.getIsLoggedIn()
+      user: '',
+      isLoggedIn: false,
+      loginFailed: false
     };
     return _this;
   }
 
   babelHelpers.createClass(AppComponent, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
       var _this2 = this;
 
       _AppStore2.default.addListener('change', function () {
         console.log('change detected');
         var user = _AppStore2.default.getUser();
+
+        if (user == null) {
+          _this2.setState({
+            isLoggedIn: false,
+            user: ''
+          });
+          return 0;
+        }
+
         if (user.email && user.password) {
           console.log('good password');
           console.log(user);
@@ -47826,17 +47844,15 @@ var AppComponent = function (_Component) {
             user: user,
             isLoggedIn: true
           });
+
+          MealActions.getMeals(user);
+          LogsTabActions.getLogs(user);
         } else {
           console.log('user not found');
+          _this2.setState({ loginFailed: true });
+          render();
         }
       });
-    }
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var x = 0;
-      console.log('comp did mount');
-      console.log(this.state.user);
     }
   }, {
     key: 'componentWillUpdate',
@@ -47845,14 +47861,13 @@ var AppComponent = function (_Component) {
 
 
       if (this.state.isLoggedIn) {
-        MealActions.getMeals();
-        LogsTabActions.getLogs(this.state.user);
+        console.log('user is logged in, fetch API');
       }
     }
   }, {
     key: 'login',
     value: function login(user) {
-      _AppActions2.default.login(user);
+      AppActions.login(user);
     }
   }, {
     key: 'forgotPassword',
@@ -47864,25 +47879,26 @@ var AppComponent = function (_Component) {
     key: 'render',
     value: function render() {
       var component;
+      var errMsg;
       if (this.state.isLoggedIn) {
         component = _react2.default.createElement(_AppTabBar2.default, { user: this.state.user, __source: {
             fileName: _jsxFileName,
-            lineNumber: 81
+            lineNumber: 92
           }
         });
       } else {
-        component = _react2.default.createElement(_Login2.default, {
-          __source: {
+        component = _react2.default.createElement(_Login2.default, { loginFailed: this.state.loginFailed, __source: {
             fileName: _jsxFileName,
-            lineNumber: 83
+            lineNumber: 94
           }
         });
       }
+
       return _react2.default.createElement(
         _reactNative.View,
         { style: styles.container, __source: {
             fileName: _jsxFileName,
-            lineNumber: 86
+            lineNumber: 99
           }
         },
         component
@@ -47898,6 +47914,9 @@ exports.default = AppComponent;
 var styles = _reactNative.StyleSheet.create({
   container: {
     flex: 1
+  },
+  errMsg: {
+    color: 'red'
   }
 });
 
@@ -47934,27 +47953,42 @@ var Login = function (_Component) {
 
     console.log('building the login screen');
     _this.state = {
-      email: '',
-      password: '',
-      showProgress: false,
-      attemptedLogin: false
+      email: 'ray@aol.com',
+      password: 'root',
+      showProgress: false
     };
     return _this;
   }
 
   babelHelpers.createClass(Login, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      if (this.props.loginFailed) {
+        this.setState({ showProgress: false });
+      }
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.loginUser();
+    }
+  }, {
+    key: 'componentWillUpdate',
+    value: function componentWillUpdate() {
+      console.log('update lifecycle method..');
+      if (this.props.loginFailed) {
+        this.setState({ showProgress: false });
+      }
+    }
+  }, {
     key: 'loginUser',
     value: function loginUser() {
-      console.log('testing button');
       this.setState({ showProgress: true });
-      console.log(this.state.email);
-      console.log(this.state.password);
       var user = {
         email: this.state.email,
         password: this.state.password
       };
       AppActions.loginUser(user);
-      this.setState({ attemptedLogin: true });
     }
   }, {
     key: 'createAccount',
@@ -47967,23 +48001,23 @@ var Login = function (_Component) {
       var _this2 = this;
 
       var errMsg;
-      if (this.state.attemptedLogin && !this.state.email) {
+      if (this.props.loginFailed) {
         errMsg = _react2.default.createElement(
           _reactNative.Text,
-          {
-            __source: {
+          { style: styles.err, __source: {
               fileName: _jsxFileName,
-              lineNumber: 47
+              lineNumber: 56
             }
           },
           '\'Login Failed. Email or pasword incorrect\''
         );
+        this.state.showProgress = false;
       }
       return _react2.default.createElement(
         _reactNative.View,
         { style: styles.container, __source: {
             fileName: _jsxFileName,
-            lineNumber: 50
+            lineNumber: 60
           }
         },
         _react2.default.createElement(_reactNative.TextInput, {
@@ -47996,7 +48030,7 @@ var Login = function (_Component) {
           placeholder: 'email',
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 51
+            lineNumber: 61
           }
         }),
         _react2.default.createElement(_reactNative.TextInput, {
@@ -48009,7 +48043,7 @@ var Login = function (_Component) {
           placeholder: 'password',
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 58
+            lineNumber: 68
           }
         }),
         _react2.default.createElement(
@@ -48021,14 +48055,14 @@ var Login = function (_Component) {
             },
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 65
+              lineNumber: 75
             }
           },
           _react2.default.createElement(
             _reactNative.Text,
             { style: styles.btnText, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 69
+                lineNumber: 79
               }
             },
             'Login'
@@ -48043,25 +48077,26 @@ var Login = function (_Component) {
             },
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 72
+              lineNumber: 82
             }
           },
           _react2.default.createElement(
             _reactNative.Text,
             { style: styles.btnText, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 76
+                lineNumber: 86
               }
             },
             'Create Account'
           )
         ),
         _react2.default.createElement(_reactNative.ActivityIndicator, {
+          style: styles.indicator,
           animating: this.state.showProgress,
           size: 'large',
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 79
+            lineNumber: 89
           }
         }),
         errMsg
@@ -48102,6 +48137,13 @@ var styles = {
     fontSize: 18,
     color: '#FFF',
     alignSelf: 'center'
+  },
+  err: {
+    color: 'red',
+    margin: 5
+  },
+  indicator: {
+    margin: 10
   }
 
 };
@@ -48111,32 +48153,29 @@ __d(/* MacroNative/app/actions/AppActions.js */function(global, require, module,
 });
 exports.loginUser = loginUser;
 exports.logoutUser = logoutUser;
+exports.getUser = getUser;
 
 var _AppDispatcher = require(420                          ); // 420 = ../dispatcher/AppDispatcher
 
 var _AppDispatcher2 = babelHelpers.interopRequireDefault(_AppDispatcher);
 
 function loginUser(user) {
-  console.log('creating loginuser action');
   _AppDispatcher2.default.dispatch({
     type: 'LOGIN_USER',
     user: user
   });
 }
 
-function logoutUser(user) {
+function logoutUser() {
   _AppDispatcher2.default.dispatch({
-    type: 'LOGOUT_USER',
-    user: user
+    type: 'LOGOUT_USER'
   });
+}
 
-  setTimeout(function () {
-    _AppDispatcher2.default.dispatch({
-      type: "RECEIVE_MENU",
-      menuItems: menuItems
-
-    });
-  }, 1000);
+function getUser() {
+  _AppDispatcher2.default.dispatch({
+    type: "GET_USER"
+  });
 }
 }, 419, null, "MacroNative/app/actions/AppActions.js");
 __d(/* MacroNative/app/dispatcher/AppDispatcher.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
@@ -48268,12 +48307,22 @@ var AppStore = function (_EventEmitter) {
 
     _this.user = {
       email: '',
-      password: ''
+      password: '',
+      id: -1,
+      name: '',
+      age: 0,
+      height: 0,
+      weight: 0
     }, _this.isLoggedIn = false;
+    _this.loginFailed = false;
+    _this.date = new Date();
     return _this;
   }
 
   babelHelpers.createClass(AppStore, [{
+    key: 'checkDate',
+    value: function checkDate(date) {}
+  }, {
     key: 'getUser',
     value: function getUser() {
       console.log('in the get user method of store..');
@@ -48306,7 +48355,6 @@ var AppStore = function (_EventEmitter) {
         email: user.email,
         password: user.password
       }));
-      console.log('logging in user ');
       console.log(user);
       fetch('http://localhost:8080/auth/login', {
         method: 'POST',
@@ -48318,23 +48366,23 @@ var AppStore = function (_EventEmitter) {
           email: user.email,
           password: user.password
         })
+      }).then(function (res) {
+        return res.json();
       }).then(function (resData) {
-        console.log('no errors');
         console.log(resData);
-        console.log(JSON.stringify(resData));
-        if (!resData.url.includes('/failure')) {
+        if (resData.email && resData.password) {
+          console.log('you have a user');
+          console.log('no errors');
+          console.log(resData);
+          console.log(JSON.stringify(resData));
           console.log('not a fail');
-          _this2.setUser(user);
+          _this2.setUser(resData);
           _this2.setIsLoggedIn(true);
 
           console.log(_this2.user);
-        } else {
-          console.log('itsa  fail');
         }
-
         console.log(_this2.user);
         _this2.emit('change');
-        LogsTabActions.getLogs(_this2.getUser());
       }).catch(function (err) {
         console.log(err);
         _this2.emit('change');
@@ -48343,13 +48391,21 @@ var AppStore = function (_EventEmitter) {
   }, {
     key: 'handleActions',
     value: function handleActions(action) {
-      console.log('handling app store actions');
       switch (action.type) {
         case 'LOGIN_USER':
           this.loginUser(action.user);
           break;
+        case 'GET_USER':
+          this.getUser();
+          break;
+        case 'GET_IS_LOGGED_IN':
+          this.getIsLoggedIn();
+          break;
+        case 'LOGOUT_USER':
+          this.user = null;
+          this.emit('change');
         default:
-          console.log('no case for action...');
+          console.log('no case for action...' + action.type);
 
       }
     }
@@ -48378,17 +48434,19 @@ var _MacrosTab = require(425          ); // 425 = ./MacrosTab
 
 var _MacrosTab2 = babelHelpers.interopRequireDefault(_MacrosTab);
 
-var _MealsTab = require(435         ); // 435 = ./MealsTab
+var _MealsTab = require(437         ); // 437 = ./MealsTab
 
 var _MealsTab2 = babelHelpers.interopRequireDefault(_MealsTab);
 
-var _LogsTab = require(439        ); // 439 = ./LogsTab
+var _LogsTab = require(441        ); // 441 = ./LogsTab
 
 var _LogsTab2 = babelHelpers.interopRequireDefault(_LogsTab);
 
-var tabIcon1 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAQAAABNTyozAAAFDElEQVR4Ae3bA5/l2BrG0beq3T22bdu2bdu2bdu2bdu2bU/b6/58Nao62XWS3Vkf4X+YnSdRG1HUarVarVar1Wq1mk5mtbHj3e51v8Wf8Lu33OsM21vEyDEi0MUijvSYvv5D/An/abj3XGozk0aejGw9N+oN0MZA/+ldJ1pYS+RCq2VcYwBQQCDgSyeZMarOaPb0MVBwIOAZG+kS1WRcJ+gDCQPB1/Y1clSL0Z2gP6QPBH6yv15RDbrYy6/QgYHgG1tojbKzuHegCYHgJXNGeRnFRdDEQAxzqh5RRpbwBU0PBO+aO8pFJ0cZRkkCMdgeUR7G9iiUKBDcauQoA7P7nBIG4i1TRLNZXl9KGogfmvxtZHNDKHEg+lo2msWOhlPyQAy0cjSD3aACgRhslehotqUygRhoiehI1jWsUoHoY7boKBY2kIoF4isTRkcwlZ+pYCBe0j1S08tbVDQQl0RqrqPCgdgsUrINFQ/Ux9SRiun1q3wgntOa6kjjeTIIxJ6Rgr3JJFB/k0XRTKp/NoG4NYrmVjIKxDJRJEuTWaBXtURRtHglu0BsGEWxHhkGek9rFEGLd7IMxHpRBGuQaaCXowieyzYQC0ejzEPGga6PRrk860CDjNXoHKF/1oHYLRphazIP9Hw0wuPZB2KyRlaGw/IPZI+k54cZBHok2ssdUhvuejPHnzCJA3wptcFGifbQWW9pvWPB+Bu62sVv0lox2sOC0rpEj/hHTOQJKZ0Y7WFfKe0dbaCLa6TzbLSHW6SzQ7SRTm6WygBdou18JZXDox309LpUZo+2MoZU7tQS7WImg6SxSbSVRaTxvbGi3RwjjePK8ydxs2iAkf0khVvL8lq9pTUa4mApvBZt5epybiuMbaDi/RZt5VHF66175MIbindt5MPXirdt5MPvijdP5MNAxRsr8mGY4nWJ9OpA9Ues/pLOgq/qn/mO/6N4XeTDo4rXR4/IhauksEU+F6vHSOFdrdEQh0rhtfIcmG3Z4Nrkl7IcmC0sjR+NE+3m+PIcuY4hlXu0RLuY1WBpbFKu2z7HpHmUrwGzp79xmHjXpZPbpDJA52g7+0jpwGgD3dwonWeiPSwgrSv1in/EpJ4t43ihs9+l9YHF42/obi+9Szl/iXC79G41R/wJUzrMtx01oEqwca0neOMYJv9Au0f7eUz+gSaN9rNl9oGey+BRhKR2jca4LOtAA40ZjTFX1oGui8Z5NuNAC0bjrJZtoJeiCFq8lWmgdaMY1sky0LtaoxhavJRhoPWjOJbILtDLWqJIbsos0JJRLJPol1Ggm6N49sgmUD+TRPG0ejaTQLtFGqbVN4NAz2iNVGxZ+UC9TREpubrigTaKtPT0eoUDnR/pmcJPFQ30vK7RESxoYAUDfWH86CjWNqxigX43c3QkWxleoUADLBodzS6VCTTIStEMtjO8AoEGWCGaxcYGlzxQH0tFM1la7xIH+s4c0Wxm8UlJA71usigDY3qohIFu1CvKQqtDDS1RoEF2jrKxiE9LEugts0cZGcm5hjc50BDH6RblZWFvNjHQs2aJstPZrn5uQqAvbKQlqsGojtWvAwP9YC89olqM7Ri/Sx/oC3vqFdVkZLv4IGGgx62nc1SbFku4Qr+CA33qWNNGPvSylmv9XkCgNx1rvsiTzhZwqIf0bnOgod50gQ1NGCMCrWaygWPc6lW/xp/wmzfc5RRbW1CvGEHUarVarVar1Wq1Wu1fqoYBwdn5trIAAAAASUVORK5CYII=';
+var _AccountTab = require(443           ); // 443 = ./AccountTab
 
-var tabIcon2 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAQAAABNTyozAAACgUlEQVR4Ae3ZA5NdWRhG4dbYtm3btm3btm1PcWwEpdg2y23bxu0VleJ7Kgcb7/MT1sHGlyEiIiIiIiIiIiIiIiIiIiIisjbszcuMpIIeeihnJC+xZ8Yywl78R4oVpfiHPTKE22hnddq4xfc8L7A2z/j99qTjZn//Pe2ko5Xd/Qz0L+n6y8+FPUW6Uh6uZ7xMEC/4F2gkQQz3L1AFQZT6F6iHILr9C5QiiF7/AlUSRJl/gUYQxFD/Ar3I6ulERiYXEMTZPu2gH2EwdQRVx0AeYi+X0+zLGyxgXc3jNfZ2Lc2G3M5kwjSRW9nAjTjb8RZ1RKGGN9jG7jjb8jHtRKmVD9jazjgb8CLNxKGJ56z73LiYfOKUxwU2fVj/kIQ/rfjYuIxqklLFRWbHWZ+vSFY/n5Fjap6dmIwJxrODiXmOpAxTlHCYaXkuoBWTtHCOSXmuowfTdHGVKXluog8T9XKtCXmuoQ9T9XJF0nnOoguTdXJGknkOoRnTNXFQchcZhdggP5FLEbIZhS2GkRV/oHewyRtx5zmDFDbp45Q482xGMbYpYJP4An2Pjb6OK8+J9GOjFMfGkSeLOdhqBpnRB7obm90adZ6NKMNmxRHPP3gS2z0S7Qi5EtuVsn50ge7FBXdEF2ghLpgXVZ7TcMVJ0QT6DVf8GEWeTWjHFS1sGH6gm3HJteEH+h+X/Bn+1L0FlzSSE/b0wjWnhhvoXVzzRriBxuOa0eFOMNpxTUuIkw4Ow0UHag+0ZtfpF71mb4YX6E9c9Ft4gabgoknhBSrCRfnhBWrHRW0ZIiIifsIzCqRACqRA8VMgBVIgBVIgBVIgBRIRERERERERERERERERERERIy0C17nK+oQ8GwQAAAAASUVORK5CYII=';
+var _AccountTab2 = babelHelpers.interopRequireDefault(_AccountTab);
+
+var tabIcon1 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAQAAABNTyozAAAFDElEQVR4Ae3bA5/l2BrG0beq3T22bdu2bdu2bdu2bdu2bU/b6/58Nao62XWS3Vkf4X+YnSdRG1HUarVarVar1Wq1mk5mtbHj3e51v8Wf8Lu33OsM21vEyDEi0MUijvSYvv5D/An/abj3XGozk0aejGw9N+oN0MZA/+ldJ1pYS+RCq2VcYwBQQCDgSyeZMarOaPb0MVBwIOAZG+kS1WRcJ+gDCQPB1/Y1clSL0Z2gP6QPBH6yv15RDbrYy6/QgYHgG1tojbKzuHegCYHgJXNGeRnFRdDEQAxzqh5RRpbwBU0PBO+aO8pFJ0cZRkkCMdgeUR7G9iiUKBDcauQoA7P7nBIG4i1TRLNZXl9KGogfmvxtZHNDKHEg+lo2msWOhlPyQAy0cjSD3aACgRhslehotqUygRhoiehI1jWsUoHoY7boKBY2kIoF4isTRkcwlZ+pYCBe0j1S08tbVDQQl0RqrqPCgdgsUrINFQ/Ux9SRiun1q3wgntOa6kjjeTIIxJ6Rgr3JJFB/k0XRTKp/NoG4NYrmVjIKxDJRJEuTWaBXtURRtHglu0BsGEWxHhkGek9rFEGLd7IMxHpRBGuQaaCXowieyzYQC0ejzEPGga6PRrk860CDjNXoHKF/1oHYLRphazIP9Hw0wuPZB2KyRlaGw/IPZI+k54cZBHok2ssdUhvuejPHnzCJA3wptcFGifbQWW9pvWPB+Bu62sVv0lox2sOC0rpEj/hHTOQJKZ0Y7WFfKe0dbaCLa6TzbLSHW6SzQ7SRTm6WygBdou18JZXDox309LpUZo+2MoZU7tQS7WImg6SxSbSVRaTxvbGi3RwjjePK8ydxs2iAkf0khVvL8lq9pTUa4mApvBZt5epybiuMbaDi/RZt5VHF66175MIbindt5MPXirdt5MPvijdP5MNAxRsr8mGY4nWJ9OpA9Ues/pLOgq/qn/mO/6N4XeTDo4rXR4/IhauksEU+F6vHSOFdrdEQh0rhtfIcmG3Z4Nrkl7IcmC0sjR+NE+3m+PIcuY4hlXu0RLuY1WBpbFKu2z7HpHmUrwGzp79xmHjXpZPbpDJA52g7+0jpwGgD3dwonWeiPSwgrSv1in/EpJ4t43ihs9+l9YHF42/obi+9Szl/iXC79G41R/wJUzrMtx01oEqwca0neOMYJv9Au0f7eUz+gSaN9rNl9oGey+BRhKR2jca4LOtAA40ZjTFX1oGui8Z5NuNAC0bjrJZtoJeiCFq8lWmgdaMY1sky0LtaoxhavJRhoPWjOJbILtDLWqJIbsos0JJRLJPol1Ggm6N49sgmUD+TRPG0ejaTQLtFGqbVN4NAz2iNVGxZ+UC9TREpubrigTaKtPT0eoUDnR/pmcJPFQ30vK7RESxoYAUDfWH86CjWNqxigX43c3QkWxleoUADLBodzS6VCTTIStEMtjO8AoEGWCGaxcYGlzxQH0tFM1la7xIH+s4c0Wxm8UlJA71usigDY3qohIFu1CvKQqtDDS1RoEF2jrKxiE9LEugts0cZGcm5hjc50BDH6RblZWFvNjHQs2aJstPZrn5uQqAvbKQlqsGojtWvAwP9YC89olqM7Ri/Sx/oC3vqFdVkZLv4IGGgx62nc1SbFku4Qr+CA33qWNNGPvSylmv9XkCgNx1rvsiTzhZwqIf0bnOgod50gQ1NGCMCrWaygWPc6lW/xp/wmzfc5RRbW1CvGEHUarVarVar1Wq1Wu1fqoYBwdn5trIAAAAASUVORK5CYII=';
 
 var tabIcon3 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAQAAABNTyozAAADJklEQVR4Ae3B30vddRzH8df06Ip2kelSy5utH7ts9wW7iSiKUbg53EVRLMxRKRtL2HURSRybUHdj2G6jH9B+SPe1ptLxdvPGBcU4O5vzeCb+Os/+gCimft/H8/6c9+MhhRBCCCGEEEIIIYQQQgghhBBqgG6OM84kc5RYZZUSc0xyjn661NjoYIhp/s8UH9OuRkQP4zzgYVT4iqfUSGjlLBU2Y4kRWtQYOMAsW1HgeaWPXspsVZm3lDZOssF2bDCgdDFIFgaUJnrZIAsbvKn0cIAyWVnkOaWFVmbJ0h+0KCWcJWtnlA56qJC1JbqVCsaxkFca6OABFiq0KwUMYeVDpYBprPwu/+jGTpUn5R3HsXRM3jGOpTF5xySWLss75rB0U95RwlJR3rGKpRV5xyqWVuQdJSwV5R1zWLop77iKpcvyjnNYGpN39GOpT97RiZ0qe+Uf17Hym1LAR1gZVAp4giUslGlTGshjYVSpoJsyWbtPp9LBGbI2rJSQY4YsTdGstPAsi2RlgX1KD4dZJwtrvK40cYIsvKd0cYJ1tmOdd5U2DnOfrVrgDaWPZ5hhK6bYr8ZAjtOU2YxFhmlWI6GLL1niYZQZpVONiDZOco0q/6XKrwzSpsbGXvrIc4kbFFlhhSI3uESeo3QohBBCCCGEEEKoHXaxj5d5n8/4lqvMME+JCutUWeEetyjwCxf5nA94hf00qTHwKC9xigmmqbAZyxS4yCkOsUcpop0jfE2BNbZrg1m+4RidSgFNvMgXFKiStSqzjHKInHyimVc5z22s3eECr5GTJ7xAnr+ppSLjHFT9I0c/19gp13mbVtUrHmOEP9lpfzHCHtUbdjPEberFHT7hEdUPepmn3sxzVPWAbr6nXl2hRzuLI9yjni3Qp53CLj7FgzGaVHu08iNe/MRu1RbNfIcnV2hRLXEebyZUO7yDRwOqDbq4i0cVelQLXMCrCdnjcZbxao2nZY1BPBuWNX7As59ljQKe3ZI1FvBsWdZwTtZwTtZwTtZwTtZwTtZwTtZwTtZwTtZwTtZwTtZwTtZwTiGEEEIIIYQQQgghhBBCCCGEf/kHYIRQeja+qU0AAAAASUVORK5CYII=';
 
@@ -48403,8 +48461,7 @@ var AppTabBar = function (_Component) {
     var _this = babelHelpers.possibleConstructorReturn(this, (AppTabBar.__proto__ || Object.getPrototypeOf(AppTabBar)).call(this, props));
 
     _this.state = {
-      tabSelected: 'macros',
-      user: props.user
+      tabSelected: 'macros'
     };
     return _this;
   }
@@ -48424,7 +48481,7 @@ var AppTabBar = function (_Component) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 38
+            lineNumber: 36
           }
         },
         _react2.default.createElement(
@@ -48438,34 +48495,12 @@ var AppTabBar = function (_Component) {
             selected: this.state.tabSelected === 'macros',
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 39
+              lineNumber: 37
             }
           },
-          _react2.default.createElement(_MacrosTab2.default, {
-            __source: {
+          _react2.default.createElement(_MacrosTab2.default, { user: this.props.user, __source: {
               fileName: _jsxFileName,
-              lineNumber: 45
-            }
-          })
-        ),
-        _react2.default.createElement(
-          _reactNative.TabBarIOS.Item,
-          {
-            title: 'meals',
-            onPress: function onPress() {
-              return _this2.changeTab('meals');
-            },
-            icon: { uri: tabIcon2, scale: 4 },
-            selected: this.state.tabSelected === 'meals',
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 47
-            }
-          },
-          _react2.default.createElement(_MealsTab2.default, {
-            __source: {
-              fileName: _jsxFileName,
-              lineNumber: 53
+              lineNumber: 43
             }
           })
         ),
@@ -48480,46 +48515,41 @@ var AppTabBar = function (_Component) {
             selected: this.state.tabSelected === 'logs',
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 55
+              lineNumber: 45
             }
           },
-          _react2.default.createElement(_LogsTab2.default, {
-            __source: {
+          _react2.default.createElement(_LogsTab2.default, { user: this.props.user, __source: {
               fileName: _jsxFileName,
-              lineNumber: 61
+              lineNumber: 51
             }
           })
         ),
         _react2.default.createElement(
           _reactNative.TabBarIOS.Item,
           {
-            title: 'account',
+            title: 'account', props: true,
             onPress: function onPress() {
               return _this2.changeTab('account');
             },
             icon: { uri: tabIcon3, scale: 4 },
             selected: this.state.tabSelected === 'account', __source: {
               fileName: _jsxFileName,
-              lineNumber: 63
+              lineNumber: 53
             }
           },
           _react2.default.createElement(
             _reactNative.View,
             { style: styles.container, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 68
+                lineNumber: 58
               }
             },
-            _react2.default.createElement(
-              _reactNative.Text,
-              {
-                __source: {
-                  fileName: _jsxFileName,
-                  lineNumber: 69
-                }
-              },
-              'Hello Universe!'
-            )
+            _react2.default.createElement(_AccountTab2.default, {
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 59
+              }
+            })
           )
         )
       );
@@ -48559,7 +48589,7 @@ var _react = require(12     ); // 12 = react
 
 var _react2 = babelHelpers.interopRequireDefault(_react);
 
-var _reactNativeSimpleGauge = require(426                        ); // 426 = react-native-simple-gauge
+var _reactNativeCircularProgress = require(426                             ); // 426 = react-native-circular-progress
 
 var _GlassOfWaterList = require(430                    ); // 430 = ./GlassOfWaterList.js
 
@@ -48569,9 +48599,17 @@ var _MacrosTabStore = require(432                       ); // 432 = ../stores/Ma
 
 var _MacrosTabStore2 = babelHelpers.interopRequireDefault(_MacrosTabStore);
 
-var _MealsTab = require(435         ); // 435 = ./MealsTab
+var _LogsTabStore = require(435                     ); // 435 = ../stores/LogsTabStore
+
+var _LogsTabStore2 = babelHelpers.interopRequireDefault(_LogsTabStore);
+
+var _MealsTab = require(437         ); // 437 = ./MealsTab
 
 var _MealsTab2 = babelHelpers.interopRequireDefault(_MealsTab);
+
+var _LogsTabActions = require(436                        ); // 436 = ../actions/LogsTabActions
+
+var LogsTabActions = babelHelpers.interopRequireWildcard(_LogsTabActions);
 
 var _reactNative = require(45            ); // 45 = react-native
 
@@ -48584,91 +48622,123 @@ var MacrosTab = function (_Component) {
     var _this = babelHelpers.possibleConstructorReturn(this, (MacrosTab.__proto__ || Object.getPrototypeOf(MacrosTab)).call(this, props));
 
     _this.state = {
-      proteinGaugeValue: _MacrosTabStore2.default.getMacros.protein,
-      carbGaugeValue: _MacrosTabStore2.default.getMacros.carbs,
-      fatGaugeValue: _MacrosTabStore2.default.getMacros.fats,
+      log: _LogsTabStore2.default.getActiveLog(),
       modalVisible: false
     };
     return _this;
   }
 
   babelHelpers.createClass(MacrosTab, [{
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      console.log('this destroys when new tab opens..');
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      _LogsTabStore2.default.addListener('change', function () {
+        console.log('the current log has changed.');
+        console.log(_LogsTabStore2.default.getActiveLog());
+        _this2.setState({
+          log: _LogsTabStore2.default.getActiveLog()
+        });
+      });
+    }
+  }, {
     key: 'setModalVisible',
     value: function setModalVisible(visible) {
       this.setState({ modalVisible: visible });
     }
   }, {
+    key: 'drinkWater',
+    value: function drinkWater() {
+      LogsTabActions.drinkWater(this.state.log.user_id);
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
+      var proteins = 0,
+          carbs = 0,
+          fats = 0,
+          calories = 0,
+          water = 0;
+
+      if (this.state.log != null) {
+        proteins = this.state.log.total_protein;
+        carbs = this.state.log.total_carbs;
+        fats = this.state.log.total_fats;
+        calories = this.state.log.total_calories;
+        water = this.state.log.total_water;
+
+        console.log('in the if case.');
+      }
+      console.log(proteins);
       return _react2.default.createElement(
         _reactNative.View,
         { style: styles.macrostab, __source: {
             fileName: _jsxFileName,
-            lineNumber: 33
+            lineNumber: 71
           }
         },
         _react2.default.createElement(
           _reactNative.View,
           { style: styles.title, __source: {
               fileName: _jsxFileName,
-              lineNumber: 34
+              lineNumber: 72
             }
           },
           _react2.default.createElement(
             _reactNative.Text,
             { allowFontScaling: false, style: styles.ticker, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 35
+                lineNumber: 73
               }
             },
-            '1234'
+            calories
           )
         ),
         _react2.default.createElement(
           _reactNative.View,
           { style: styles.gauges, __source: {
               fileName: _jsxFileName,
-              lineNumber: 37
+              lineNumber: 75
             }
           },
-          _react2.default.createElement(_reactNativeSimpleGauge.AnimatedGaugeProgress, {
-            style: styles.proteinStyle,
+          _react2.default.createElement(_reactNativeCircularProgress.AnimatedCircularProgress, {
             size: 100,
-            width: 25,
-            fill: this.state.proteinGaugeValue,
-            rotation: 90,
-            cropDegree: 0,
+            width: 15,
+            fill: proteins,
             tintColor: '#F39',
-
+            backgroundColor: '#3d5875',
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 38
+              lineNumber: 76
             }
           }),
-          _react2.default.createElement(_reactNativeSimpleGauge.AnimatedGaugeProgress, {
+          _react2.default.createElement(_reactNativeCircularProgress.AnimatedCircularProgress, {
             size: 100,
-            width: 25,
-            fill: this.state.carbGaugeValue,
-            rotation: 90,
-            cropDegree: 0,
+            width: 15,
+            fill: carbs,
             tintColor: '#00BFFF',
+            backgroundColor: '#3d5875',
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 48
+              lineNumber: 83
             }
           }),
-          _react2.default.createElement(_reactNativeSimpleGauge.AnimatedGaugeProgress, {
+          _react2.default.createElement(_reactNativeCircularProgress.AnimatedCircularProgress, {
             size: 100,
-            width: 25,
-            fill: this.state.fatGaugeValue,
-            rotation: 90,
-            cropDegree: 0,
+            width: 15,
+            fill: fats,
             tintColor: '#FC6',
+            backgroundColor: '#3d5875',
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 56
+              lineNumber: 90
             }
           })
         ),
@@ -48676,7 +48746,7 @@ var MacrosTab = function (_Component) {
           _reactNative.View,
           { style: styles.gaugeLabels, __source: {
               fileName: _jsxFileName,
-              lineNumber: 65
+              lineNumber: 98
             }
           },
           _react2.default.createElement(
@@ -48684,7 +48754,7 @@ var MacrosTab = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 66
+                lineNumber: 99
               }
             },
             'Protein'
@@ -48694,7 +48764,7 @@ var MacrosTab = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 67
+                lineNumber: 100
               }
             },
             'Carbs'
@@ -48703,7 +48773,7 @@ var MacrosTab = function (_Component) {
             _reactNative.Text,
             { style: { paddingLeft: 25 }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 68
+                lineNumber: 101
               }
             },
             'Fats'
@@ -48711,16 +48781,14 @@ var MacrosTab = function (_Component) {
         ),
         _react2.default.createElement(
           _reactNative.View,
-          {
-            __source: {
+          { style: styles.glassListContainer, __source: {
               fileName: _jsxFileName,
-              lineNumber: 71
+              lineNumber: 104
             }
           },
-          _react2.default.createElement(_GlassOfWaterList2.default, {
-            __source: {
+          _react2.default.createElement(_GlassOfWaterList2.default, { water: water, __source: {
               fileName: _jsxFileName,
-              lineNumber: 72
+              lineNumber: 105
             }
           })
         ),
@@ -48728,33 +48796,32 @@ var MacrosTab = function (_Component) {
           _reactNative.TouchableHighlight,
           {
             onPress: function onPress() {
-              _this2.setModalVisible(!_this2.state.modalVisible);
+              _this3.setModalVisible(!_this3.state.modalVisible);
             },
             underlayColor: 'white',
 
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 75
+              lineNumber: 108
             }
           },
           _react2.default.createElement(
             _reactNative.View,
-            {
-              style: styles.btn,
-              __source: {
+            { style: styles.btn, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 80
+                lineNumber: 113
               }
             },
             _react2.default.createElement(
               _reactNative.Text,
               {
+                fontSize: 20,
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 83
+                  lineNumber: 114
                 }
               },
-              'Test'
+              'Add Meal'
             )
           )
         ),
@@ -48762,7 +48829,7 @@ var MacrosTab = function (_Component) {
           _reactNative.View,
           { style: { marginTop: 22 }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 89
+              lineNumber: 122
             }
           },
           _react2.default.createElement(
@@ -48773,33 +48840,33 @@ var MacrosTab = function (_Component) {
               visible: this.state.modalVisible,
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 90
+                lineNumber: 123
               }
             },
             _react2.default.createElement(
               _reactNative.View,
               { style: { marginTop: 22 }, __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 95
+                  lineNumber: 128
                 }
               },
               _react2.default.createElement(
                 _reactNative.TouchableHighlight,
                 {
                   onPress: function onPress() {
-                    _this2.setModalVisible(!_this2.state.modalVisible);
+                    _this3.setModalVisible(!_this3.state.modalVisible);
                   },
                   underlayColor: 'white',
                   __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 96
+                    lineNumber: 129
                   }
                 },
                 _react2.default.createElement(
                   _reactNative.View,
                   { style: styles.btn, __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 100
+                      lineNumber: 133
                     }
                   },
                   _react2.default.createElement(
@@ -48807,7 +48874,7 @@ var MacrosTab = function (_Component) {
                     {
                       __source: {
                         fileName: _jsxFileName,
-                        lineNumber: 101
+                        lineNumber: 134
                       }
                     },
                     'close'
@@ -48818,7 +48885,7 @@ var MacrosTab = function (_Component) {
             _react2.default.createElement(_MealsTab2.default, {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 108
+                lineNumber: 141
               }
             })
           )
@@ -48840,12 +48907,19 @@ var styles = _reactNative.StyleSheet.create({
   ticker: {
     fontSize: 100,
     color: 'white',
-    backgroundColor: '#00D364'
+    backgroundColor: '#00D364',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   title: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20
+    alignItems: 'center',
+    marginTop: 20,
+    backgroundColor: '#00D364',
+    borderRadius: 10,
+    marginLeft: 10,
+    marginRight: 10
   },
   gauges: {
     flex: 0,
@@ -48853,7 +48927,11 @@ var styles = _reactNative.StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'flex-end',
     padding: 10,
-    backgroundColor: 'powderblue'
+    backgroundColor: '#ecf0f1',
+    borderRadius: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 10
   },
   gaugeLabels: {
     flex: 0,
@@ -48861,8 +48939,16 @@ var styles = _reactNative.StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'stretch',
     padding: 10,
-    paddingRight: 25,
-    backgroundColor: 'skyblue'
+    paddingRight: 25
+  },
+  glassListContainer: {
+    backgroundColor: '#3498db',
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderRadius: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 10
   },
   container: {
     flex: 1,
@@ -48874,20 +48960,24 @@ var styles = _reactNative.StyleSheet.create({
     justifyContent: 'flex-start'
   },
   btn: {
+    height: 50,
     backgroundColor: 'deepskyblue',
-    padding: 5,
+    marginTop: 10,
+    marginLeft: 10,
+    marginRight: 10,
     borderWidth: 10,
-    borderRadius: 15,
-    borderColor: 'deepskyblue'
+    borderRadius: 5,
+    borderColor: 'deepskyblue',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
-
 });
 
 _reactNative.AppRegistry.registerComponent('MacrosTab', function () {
   return MacrosTab;
 });
 }, 425, null, "MacroNative/app/components/MacrosTab.js");
-__d(/* react-native-simple-gauge/index.js */function(global, require, module, exports) {var _CircularProgress = require(427                     ); // 427 = ./src/CircularProgress
+__d(/* react-native-circular-progress/index.js */function(global, require, module, exports) {var _CircularProgress = require(427                     ); // 427 = ./src/CircularProgress
 
 var _CircularProgress2 = babelHelpers.interopRequireDefault(_CircularProgress);
 
@@ -48895,13 +48985,13 @@ var _AnimatedCircularProgress = require(429                             ); // 42
 
 var _AnimatedCircularProgress2 = babelHelpers.interopRequireDefault(_AnimatedCircularProgress);
 
-exports.GaugeProgress = _CircularProgress2.default;
-exports.AnimatedGaugeProgress = _AnimatedCircularProgress2.default;
-}, 426, null, "react-native-simple-gauge/index.js");
-__d(/* react-native-simple-gauge/src/CircularProgress.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
+exports.CircularProgress = _CircularProgress2.default;
+exports.AnimatedCircularProgress = _AnimatedCircularProgress2.default;
+}, 426, null, "react-native-circular-progress/index.js");
+__d(/* react-native-circular-progress/src/CircularProgress.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/raymondtorres/Developer/MacroNative/node_modules/react-native-simple-gauge/src/CircularProgress.js';
+var _jsxFileName = '/Users/raymondtorres/Developer/MacroNative/node_modules/react-native-circular-progress/src/CircularProgress.js';
 
 var _react = require(12     ); // 12 = react
 
@@ -48956,15 +49046,14 @@ var CircularProgress = function (_React$Component) {
           tintColor = _props.tintColor,
           backgroundColor = _props.backgroundColor,
           style = _props.style,
-          strokeCap = _props.strokeCap,
           rotation = _props.rotation,
-          cropDegree = _props.cropDegree,
+          linecap = _props.linecap,
           children = _props.children;
 
-      var backgroundPath = this.circlePath(size / 2, size / 2, size / 2 - width / 2, 0, 360 - cropDegree);
+      var backgroundPath = this.circlePath(size / 2, size / 2, size / 2 - width / 2, 0, 360);
 
       var fill = this.extractFill(this.props.fill);
-      var circlePath = this.circlePath(size / 2, size / 2, size / 2 - width / 2, 0, (360 - cropDegree) * fill / 100);
+      var circlePath = this.circlePath(size / 2, size / 2, size / 2 - width / 2, 0, 360 * fill / 100);
 
       return _react2.default.createElement(
         _reactNative.View,
@@ -48984,15 +49073,14 @@ var CircularProgress = function (_React$Component) {
           },
           _react2.default.createElement(
             _ReactNativeART.Group,
-            { rotation: rotation + cropDegree / 2, originX: size / 2, originY: size / 2, __source: {
+            { rotation: rotation - 90, originX: size / 2, originY: size / 2, __source: {
                 fileName: _jsxFileName,
                 lineNumber: 46
               }
             },
             _react2.default.createElement(_ReactNativeART.Shape, { d: backgroundPath,
               stroke: backgroundColor,
-              strokeWidth: width,
-              strokeCap: strokeCap, __source: {
+              strokeWidth: width, __source: {
                 fileName: _jsxFileName,
                 lineNumber: 47
               }
@@ -49000,9 +49088,9 @@ var CircularProgress = function (_React$Component) {
             _react2.default.createElement(_ReactNativeART.Shape, { d: circlePath,
               stroke: tintColor,
               strokeWidth: width,
-              strokeCap: strokeCap, __source: {
+              strokeCap: linecap, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 51
+                lineNumber: 50
               }
             })
           )
@@ -49023,10 +49111,9 @@ CircularProgress.propTypes = {
   fill: _react.PropTypes.number.isRequired,
   width: _react.PropTypes.number.isRequired,
   tintColor: _react.PropTypes.string,
-  strokeCap: _react.PropTypes.string,
   backgroundColor: _react.PropTypes.string,
   rotation: _react.PropTypes.number,
-  cropDegree: _react.PropTypes.number,
+  linecap: _react.PropTypes.string,
   children: _react.PropTypes.func
 };
 
@@ -49034,10 +49121,9 @@ CircularProgress.defaultProps = {
   tintColor: 'black',
   backgroundColor: '#e4e4e4',
   rotation: 90,
-  cropDegree: 90,
-  strokeCap: 'butt'
+  linecap: 'butt'
 };
-}, 427, null, "react-native-simple-gauge/src/CircularProgress.js");
+}, 427, null, "react-native-circular-progress/src/CircularProgress.js");
 __d(/* art/metrics/path.js */function(global, require, module, exports) {var Class = require(283            ); // 283 = ../core/class
 var Path = require(284           ); // 284 = ../core/path
 var Transform = require(285                ); // 285 = ../core/transform
@@ -49091,10 +49177,10 @@ module.exports = Class(Path, {
 
 });
 }, 428, null, "art/metrics/path.js");
-__d(/* react-native-simple-gauge/src/AnimatedCircularProgress.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
+__d(/* react-native-circular-progress/src/AnimatedCircularProgress.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/raymondtorres/Developer/MacroNative/node_modules/react-native-simple-gauge/src/AnimatedCircularProgress.js';
+var _jsxFileName = '/Users/raymondtorres/Developer/MacroNative/node_modules/react-native-circular-progress/src/AnimatedCircularProgress.js';
 
 var _react = require(12     ); // 12 = react
 
@@ -49196,7 +49282,7 @@ AnimatedCircularProgress.defaultProps = {
   tension: 7,
   friction: 10
 };
-}, 429, null, "react-native-simple-gauge/src/AnimatedCircularProgress.js");
+}, 429, null, "react-native-circular-progress/src/AnimatedCircularProgress.js");
 __d(/* MacroNative/app/components/GlassOfWaterList.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -49221,8 +49307,8 @@ var GlassList = function (_Component) {
     var _this = babelHelpers.possibleConstructorReturn(this, (GlassList.__proto__ || Object.getPrototypeOf(GlassList)).call(this, props));
 
     _this.state = {
-      waterIntake: 0,
-      glasses: [{ isfull: false }, { isfull: false }, { isfull: false }, { isfull: false }, { isfull: false }, { isfull: false }, { isfull: false }, { isfull: false }]
+      waterIntake: _this.props.water,
+      glasses: [{ isFull: false }, { isFull: false }, { isFull: false }, { isFull: false }, { isFull: false }, { isFull: false }, { isFull: false }, { isFull: false }]
     };
     return _this;
   }
@@ -49317,7 +49403,6 @@ var styles = _reactNative.StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'steelblue',
     padding: 5
   }
 });
@@ -49358,7 +49443,6 @@ var GlassFullIcon = function (_Component) {
   babelHelpers.createClass(GlassFullIcon, [{
     key: 'fillGlass',
     value: function fillGlass() {
-      _MacrosTabStore2.default.drinkWater();
       this.setState({ isFull: true });
     }
   }, {
@@ -49376,7 +49460,7 @@ var GlassFullIcon = function (_Component) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 31
+            lineNumber: 32
           }
         },
         _react2.default.createElement(
@@ -49385,16 +49469,16 @@ var GlassFullIcon = function (_Component) {
               return _this2.fillGlass();
             }, __source: {
               fileName: _jsxFileName,
-              lineNumber: 32
+              lineNumber: 33
             }
           },
           this.state.isFull ? _react2.default.createElement(_reactNative.Image, { style: styles.glass, source: require(433                           ), __source: { // 433 = ../public/glass-of-water.png
               fileName: _jsxFileName,
-              lineNumber: 33
+              lineNumber: 34
             }
           }) : _react2.default.createElement(_reactNative.Image, { style: styles.glass, source: require(434                        ), __source: { // 434 = ../public/glass-empty.png
               fileName: _jsxFileName,
-              lineNumber: 33
+              lineNumber: 34
             }
           })
         )
@@ -49435,9 +49519,9 @@ var MacrosTabStore = function (_EventEmitter) {
 
     var _this = babelHelpers.possibleConstructorReturn(this, (MacrosTabStore.__proto__ || Object.getPrototypeOf(MacrosTabStore)).call(this));
 
-    _this.protein = 0;
-    _this.carbs = 0;
-    _this.fats = 0;
+    _this.protein = 25;
+    _this.carbs = 40;
+    _this.fats = 75;
     _this.calories = 0;
     _this.water = 0;
     _this.miles = 0;
@@ -49483,6 +49567,277 @@ __d(/* MacroNative/app/public/glass-of-water.png */function(global, require, mod
 }, 433, null, "MacroNative/app/public/glass-of-water.png");
 __d(/* MacroNative/app/public/glass-empty.png */function(global, require, module, exports) {module.exports = require(276                                         ).registerAsset({"__packager_asset":true,"httpServerLocation":"/assets/app/public","width":85.33333333333333,"height":85.33333333333333,"scales":[3],"hash":"6fb54ef069d235427cbc290d8a8d47a5","name":"glass-empty","type":"png"}); // 276 = react-native/Libraries/Image/AssetRegistry
 }, 434, null, "MacroNative/app/public/glass-empty.png");
+__d(/* MacroNative/app/stores/LogsTabStore.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _EventEmitter2 = require(76            ); // 76 = EventEmitter
+
+var _EventEmitter3 = babelHelpers.interopRequireDefault(_EventEmitter2);
+
+var _AppDispatcher = require(420                          ); // 420 = ../dispatcher/AppDispatcher
+
+var _AppDispatcher2 = babelHelpers.interopRequireDefault(_AppDispatcher);
+
+var _AppStore = require(423         ); // 423 = ./AppStore
+
+var _AppStore2 = babelHelpers.interopRequireDefault(_AppStore);
+
+var _LogsTabActions = require(436                        ); // 436 = ../actions/LogsTabActions
+
+var LogsTabActions = babelHelpers.interopRequireWildcard(_LogsTabActions);
+
+var LogsTabStore = function (_EventEmitter) {
+  babelHelpers.inherits(LogsTabStore, _EventEmitter);
+
+  function LogsTabStore() {
+    babelHelpers.classCallCheck(this, LogsTabStore);
+
+    var _this = babelHelpers.possibleConstructorReturn(this, (LogsTabStore.__proto__ || Object.getPrototypeOf(LogsTabStore)).call(this));
+
+    _this.user = _AppStore2.default.getUser();
+    _this.logs = [];
+    _this.activeLog = null;
+    _this.activeLogWater = [{ isFull: false }, { isFull: false }, { isFull: false }, { isFull: false }, { isFull: false }, { isFull: false }, { isFull: false }, { isFull: false }];
+    return _this;
+  }
+
+  babelHelpers.createClass(LogsTabStore, [{
+    key: 'getUser',
+    value: function getUser() {
+      return this.user;
+    }
+  }, {
+    key: 'getLogs',
+    value: function getLogs() {
+      return this.logs;
+    }
+  }, {
+    key: 'getActiveLog',
+    value: function getActiveLog() {
+      return this.activeLog;
+    }
+  }, {
+    key: 'addLog',
+    value: function addLog() {
+      var log = {
+        total_calories: 0,
+        total_protein: 0,
+        total_carbs: 0,
+        total_fats: 0,
+        total_water: 0,
+        total_activity: 0,
+        weigh_in: 0,
+        user_id: _AppStore2.default.getUser().id,
+        log_date: new Date()
+      };
+      fetch('http://localhost:8080/api/createLog', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(log)
+      }).then(function (res) {
+        return res.json();
+      }).then(function (response) {
+        console.log('got response');
+        var logs = response;
+
+        _AppDispatcher2.default.dispatch({
+          type: 'GET_LOGS',
+          logs: logs
+        });
+      });
+    }
+  }, {
+    key: 'loadLogs',
+    value: function loadLogs(logs) {
+      console.log('getting logs..');
+      console.log(logs);
+      this.logs = logs.sort().reverse();
+      console.log(logs);
+
+      if (logs[0] == null) {
+        console.log('you have an empty arry');
+        this.addLog();
+        return 0;
+      }
+      console.log(new Date(this.logs[0].log_date).getMonth());
+      if (new Date(this.logs[0].log_date).getMonth() == new Date().getMonth() && new Date(this.logs[0].log_date).getDay() == new Date().getDay()) {
+        console.log('this means that the latest date ' + 'from db is the current date');
+        this.activeLog = this.logs[0];
+        this.emit('change');
+        console.log(this.activeLog);
+      } else {
+        console.log("or it's not the latest and you have to create a new one");
+        this.addLog();
+      }
+    }
+  }, {
+    key: 'drinkWater',
+    value: function drinkWater() {
+      for (var cup in activeLogWater) {
+        if (!cup.isFull) {
+          cup.isFull = true;
+          this.emit('change');
+        }
+      }
+    }
+  }, {
+    key: 'handleActions',
+    value: function handleActions(action) {
+      console.log('logsstore received an action.', action);
+      switch (action.type) {
+        case 'ADD_LOG':
+          console.log('adding log to list...');
+          this.logs.push(action.log);
+          console.log(this.logs);
+          this.emit('change');
+          break;
+        case 'GET_LOGS':
+          this.loadLogs(action.logs);
+
+          break;
+        case 'CREATE_LOG':
+          console.log('creating a log..');
+          this.logs.push(action.log);
+          break;
+        case 'ADD_MEAL_TO_LOG':
+          LogsTabActions.getLogs(this.user);
+
+          break;
+        case 'REFRESH_LOGS':
+          console.log('updating log list..');
+          console.log(action.meals[0]);
+          var newMealList = action.meals[0].sort().reverse();
+          console.log(newMealList);
+          this.logs = newMealList;
+          this.activeLog = newMealList[0];
+          this.emit('change');
+          break;
+        case 'DRINK_WATER':
+          console.log('drinking water..');
+          drinkWater();
+      }
+    }
+  }]);
+  return LogsTabStore;
+}(_EventEmitter3.default);
+
+var logsStore = new LogsTabStore();
+_AppDispatcher2.default.register(logsStore.handleActions.bind(logsStore));
+exports.default = logsStore;
+}, 435, null, "MacroNative/app/stores/LogsTabStore.js");
+__d(/* MacroNative/app/actions/LogsTabActions.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.addLog = addLog;
+exports.removeLog = removeLog;
+exports.createLog = createLog;
+exports.getLogs = getLogs;
+exports.addMealToLog = addMealToLog;
+exports.drinkWater = drinkWater;
+
+var _AppDispatcher = require(420                          ); // 420 = ../dispatcher/AppDispatcher
+
+var _AppDispatcher2 = babelHelpers.interopRequireDefault(_AppDispatcher);
+
+function addLog(log) {
+  console.log('inside the log action addlog with a new log...', log);
+  _AppDispatcher2.default.dispatch({
+    type: 'ADD_LOG',
+    log: log
+  });
+}
+
+function removeLog(log) {
+  _AppDispatcher2.default.dispatch({
+    type: 'REMOVE_LOG',
+    log: log
+  });
+}
+
+function createLog() {
+  _AppDispatcher2.default.dispatch({
+    type: 'CREATE_LOG',
+    log: log
+  });
+}
+
+function getLogs(user) {
+  fetch('http://localhost:8080/api/logs', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(user)
+  }).then(function (res) {
+    return res.json();
+  }).then(function (response) {
+    console.log(response);
+    console.log('got response');
+    var logs = response;
+    console.log(logs);
+    _AppDispatcher2.default.dispatch({
+      type: 'GET_LOGS',
+      logs: logs
+    });
+  }).catch(function (error) {
+    console.log('getlog api error');
+    console.log(error);
+    _AppDispatcher2.default.dispatch({
+      type: 'GET_LOGS',
+      logs: []
+    });
+  });
+}
+
+function addMealToLog(mealLog) {
+  fetch('http://localhost:8080/api/meal-logs', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(mealLog)
+  }).then(function (res) {
+    return res.json();
+  }).then(function (resJson) {
+    console.log(resJson);;
+  }).catch(function (err) {
+    console.log(err);
+  });
+}
+
+function drinkWater(logId) {
+  fetch('http://localhost:8080/api/water', {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(logId)
+  }).then(function (res) {
+    return res.json();
+  }).then(function (resJson) {
+    console.log('drank water..');
+    console.log(resJson);
+    var water = {
+      isFull: true
+    };
+    _AppDispatcher2.default.dispatch({
+      type: 'DRINK_WATER',
+      water: water
+    });
+  }).catch(function (err) {
+    if (err) {
+      throw err;
+    }
+  });
+}
+}, 436, null, "MacroNative/app/actions/LogsTabActions.js");
 __d(/* MacroNative/app/components/MealsTab.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -49494,15 +49849,15 @@ var _react2 = babelHelpers.interopRequireDefault(_react);
 
 var _reactNative = require(45            ); // 45 = react-native
 
-var _MealsTabStore = require(436                      ); // 436 = ../stores/MealsTabStore
+var _MealsTabStore = require(438                      ); // 438 = ../stores/MealsTabStore
 
 var _MealsTabStore2 = babelHelpers.interopRequireDefault(_MealsTabStore);
 
-var _Meal = require(437     ); // 437 = ./Meal
+var _Meal = require(439     ); // 439 = ./Meal
 
 var _Meal2 = babelHelpers.interopRequireDefault(_Meal);
 
-var _MealActions = require(438                     ); // 438 = ../actions/MealActions
+var _MealActions = require(440                     ); // 440 = ../actions/MealActions
 
 var _MealActions2 = babelHelpers.interopRequireDefault(_MealActions);
 
@@ -49519,39 +49874,62 @@ var MealsTab = function (_Component) {
     var _this = babelHelpers.possibleConstructorReturn(this, (MealsTab.__proto__ || Object.getPrototypeOf(MealsTab)).call(this));
 
     _this.state = {
-      meals: meals.cloneWithRows(_MealsTabStore2.default.getMeals())
+      mealList: meals
     };
     return _this;
   }
 
   babelHelpers.createClass(MealsTab, [{
     key: 'componentWillMount',
-    value: function componentWillMount() {}
+    value: function componentWillMount() {
+      console.log(this.props.user);
+      var user = this.props.user;
+      var rows = _MealsTabStore2.default.getMeals();
+      if (rows == undefined) {
+        rows = [];
+      }
+      this.setState({
+        mealList: meals.cloneWithRows(rows)
+      });
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      _MealsTabStore2.default.addListener('change', function () {
+        var rows = _MealsTabStore2.default.getMeals();
+        _this2.setState({
+          mealList: meals.cloneWithRows(rows)
+        });
+      });
+    }
   }, {
     key: 'render',
     value: function render() {
+      console.log(this.state.mealList);
       return _react2.default.createElement(
         _reactNative.View,
         { style: styles.list, __source: {
             fileName: _jsxFileName,
-            lineNumber: 36
+            lineNumber: 50
           }
         },
         _react2.default.createElement(_reactNative.ListView, {
-          dataSource: this.state.meals,
+          dataSource: this.state.mealList,
           renderRow: function renderRow(rowData) {
             return _react2.default.createElement(_Meal2.default, {
               id: rowData.id,
               name: rowData.name,
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 40
+                lineNumber: 54
               }
             });
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 37
+            lineNumber: 51
           }
         })
       );
@@ -49564,14 +49942,14 @@ exports.default = MealsTab;
 
 var styles = _reactNative.StyleSheet.create({
   list: {
-    backgroundColor: "teal",
+    backgroundColor: '#f0f8ff',
     flex: 1
   } });
 
 _reactNative.AppRegistry.registerComponent('MealsTab', function () {
   return MealsTab;
 });
-}, 435, null, "MacroNative/app/components/MealsTab.js");
+}, 437, null, "MacroNative/app/components/MealsTab.js");
 __d(/* MacroNative/app/stores/MealsTabStore.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -49592,7 +49970,7 @@ var MealsTabStore = function (_EventEmitter) {
 
     var _this = babelHelpers.possibleConstructorReturn(this, (MealsTabStore.__proto__ || Object.getPrototypeOf(MealsTabStore)).call(this));
 
-    _this.meals = [{ id: 1, name: 'chix sandwich', protein: 30, carbs: 20, fats: 10, calories: 700 }, { id: 2, name: 'fish tacos', protein: 30, carbs: 10, fats: 20, calories: 500 }, { id: 3, name: 'pizza', protein: 8, carbs: 30, fats: 30, calories: 600 }, { id: 4, name: 'yams', protein: 4, carbs: 50, fats: 4, calories: 400 }, { id: 5, name: 'cake', protein: 8, carbs: 60, fats: 40, calories: 800 }, { id: 6, name: 'burger', protein: 20, carbs: 28, fats: 12, calories: 1200 }];
+    _this.meals = [];
     return _this;
   }
 
@@ -49620,17 +49998,26 @@ var MealsTabStore = function (_EventEmitter) {
   }, {
     key: 'addMealToLog',
     value: function addMealToLog(meal) {
-      console.log('adding meal to daily log...');
+      console.log('adding meal to list...');
+    }
+  }, {
+    key: 'getInitialMeals',
+    value: function getInitialMeals(user) {
+      console.log('fetching initial render info for meals from db..');
     }
   }, {
     key: 'handleActions',
     value: function handleActions(action) {
       switch (action.type) {
-        case 'ADD_MEAL_TO_LOG':
-          {
-            this.addMealToLog(action.meal);
+        case 'GET_MEALS':
+          if (action.meals) {
+            console.log(action.meals);
+            this.meals = action.meals;
+            this.emit('change');
+          } else {
+            console.log('empty response from db.');
           }
-
+          break;
       }
     }
   }]);
@@ -49641,7 +50028,7 @@ var mealstabstore = new MealsTabStore();
 _AppDispatcher2.default.register(mealstabstore.handleActions.bind(mealstabstore));
 
 exports.default = mealstabstore;
-}, 436, null, "MacroNative/app/stores/MealsTabStore.js");
+}, 438, null, "MacroNative/app/stores/MealsTabStore.js");
 __d(/* MacroNative/app/components/Meal.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -49653,11 +50040,15 @@ var _react2 = babelHelpers.interopRequireDefault(_react);
 
 var _reactNative = require(45            ); // 45 = react-native
 
-var _MealsTabStore = require(436                      ); // 436 = ../stores/MealsTabStore
+var _MealsTabStore = require(438                      ); // 438 = ../stores/MealsTabStore
 
 var _MealsTabStore2 = babelHelpers.interopRequireDefault(_MealsTabStore);
 
-var _MealActions = require(438                     ); // 438 = ../actions/MealActions
+var _LogsTabStore = require(435                     ); // 435 = ../stores/LogsTabStore
+
+var _LogsTabStore2 = babelHelpers.interopRequireDefault(_LogsTabStore);
+
+var _MealActions = require(440                     ); // 440 = ../actions/MealActions
 
 var MealActions = babelHelpers.interopRequireWildcard(_MealActions);
 
@@ -49676,15 +50067,26 @@ var Meal = function (_Component) {
 
   babelHelpers.createClass(Meal, [{
     key: 'addMealToLog',
-    value: function addMealToLog() {}
+    value: function addMealToLog() {
+      console.log('adding meal to log');
+      console.log(this.props);
+      var mealLog = {
+        log_id: _LogsTabStore2.default.getActiveLog().id,
+        meal_id: this.props.id
+      };
+      console.log(mealLog);
+      MealActions.addMealToLog(mealLog);
+    }
   }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       return _react2.default.createElement(
         _reactNative.View,
         { style: styles.card, __source: {
             fileName: _jsxFileName,
-            lineNumber: 20
+            lineNumber: 28
           }
         },
         _react2.default.createElement(
@@ -49692,7 +50094,7 @@ var Meal = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 21
+              lineNumber: 29
             }
           },
           this.props.id,
@@ -49704,14 +50106,18 @@ var Meal = function (_Component) {
           source: { uri: addIcon, scale: 1 },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 22
+            lineNumber: 30
           }
         }),
-        _react2.default.createElement(_reactNative.Button, { title: 'Add', color: 'purple', onPress: function onPress() {
-            return console.log('meal added.');
-          }, __source: {
+        _react2.default.createElement(_reactNative.Button, {
+          title: 'Add',
+          color: 'purple',
+          onPress: function onPress() {
+            return _this2.addMealToLog();
+          },
+          __source: {
             fileName: _jsxFileName,
-            lineNumber: 26
+            lineNumber: 34
           }
         })
       );
@@ -49748,22 +50154,38 @@ var styles = _reactNative.StyleSheet.create({
 });
 
 var addIcon = 'data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjY0cHgiIGhlaWdodD0iNjRweCIgdmlld0JveD0iMCAwIDQ0LjIzOCA0NC4yMzgiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDQ0LjIzOCA0NC4yMzg7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGc+Cgk8Zz4KCQk8cGF0aCBkPSJNMjIuMTE5LDQ0LjIzN0M5LjkyMiw0NC4yMzcsMCwzNC4zMTUsMCwyMi4xMkMwLDkuOTI0LDkuOTIyLDAuMDAxLDIyLjExOSwwLjAwMVM0NC4yMzgsOS45MjMsNDQuMjM4LDIyLjEyICAgIFMzNC4zMTQsNDQuMjM3LDIyLjExOSw0NC4yMzd6IE0yMi4xMTksMS41MDFDMTAuNzUsMS41MDEsMS41LDEwLjc1MSwxLjUsMjIuMTJzOS4yNSwyMC42MTksMjAuNjE5LDIwLjYxOSAgICBzMjAuNjE5LTkuMjUsMjAuNjE5LTIwLjYxOVMzMy40ODgsMS41MDEsMjIuMTE5LDEuNTAxeiIgZmlsbD0iIzAwMDAwMCIvPgoJCTxnPgoJCQk8cGF0aCBkPSJNMzEuNDM0LDIyLjg2OUgxMi44MDVjLTAuNDE0LDAtMC43NS0wLjMzNi0wLjc1LTAuNzVzMC4zMzYtMC43NSwwLjc1LTAuNzVoMTguNjI4YzAuNDE0LDAsMC43NSwwLjMzNiwwLjc1LDAuNzUgICAgIFMzMS44NDgsMjIuODY5LDMxLjQzNCwyMi44Njl6IiBmaWxsPSIjMDAwMDAwIi8+CgkJPC9nPgoJCTxnPgoJCQk8cGF0aCBkPSJNMjIuMTE5LDMyLjE4M2MtMC40MTQsMC0wLjc1LTAuMzM2LTAuNzUtMC43NVYxMi44MDZjMC0wLjQxNCwwLjMzNi0wLjc1LDAuNzUtMC43NXMwLjc1LDAuMzM2LDAuNzUsMC43NXYxOC42MjYgICAgIEMyMi44NjksMzEuODQ3LDIyLjUzMywzMi4xODMsMjIuMTE5LDMyLjE4M3oiIGZpbGw9IiMwMDAwMDAiLz4KCQk8L2c+Cgk8L2c+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPC9zdmc+Cg==';
-}, 437, null, "MacroNative/app/components/Meal.js");
+}, 439, null, "MacroNative/app/components/Meal.js");
 __d(/* MacroNative/app/actions/MealActions.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.addMealToLog = addMealToLog;
 exports.removeMealFromLog = removeMealFromLog;
-exports.getMenu = getMenu;
+exports.getMeals = getMeals;
 
 var _AppDispatcher = require(420                          ); // 420 = ../dispatcher/AppDispatcher
 
 var _AppDispatcher2 = babelHelpers.interopRequireDefault(_AppDispatcher);
 
-function addMealToLog(meal) {
-  _AppDispatcher2.default.dispatch({
-    type: 'ADD_MEAL_TO_LOG',
-    meal: meal
+function addMealToLog(mealLog) {
+  console.log(JSON.stringify(mealLog));
+  fetch('http://localhost:8080/api/meal-logs', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(mealLog)
+  }).then(function (response) {
+    return response.json();
+  }).then(function (res) {
+    console.log(res);
+    var meals = res;
+    _AppDispatcher2.default.dispatch({
+      type: 'REFRESH_LOGS',
+      meals: meals
+    });
+  }).catch(function (err) {
+    console.log(err);
   });
 }
 
@@ -49774,20 +50196,21 @@ function removeMealFromLog(meal) {
   });
 }
 
-function getMenu() {
-  _AppDispatcher2.default.dispatch({
-    type: "GET_MENU"
-  });
-
-  setTimeout(function () {
+function getMeals() {
+  fetch('http://localhost:8080/api/meals').then(function (res) {
+    return res.json();
+  }).then(function (response) {
+    var meals = response;
+    console.log(meals);
     _AppDispatcher2.default.dispatch({
-      type: "RECEIVE_MENU",
-      menuItems: menuItems
-
+      type: "GET_MEALS",
+      meals: meals
     });
-  }, 1000);
+  }).catch(function (err) {
+    console.log(err);
+  });
 }
-}, 438, null, "MacroNative/app/actions/MealActions.js");
+}, 440, null, "MacroNative/app/actions/MealActions.js");
 __d(/* MacroNative/app/components/LogsTab.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -49799,11 +50222,15 @@ var _react2 = babelHelpers.interopRequireDefault(_react);
 
 var _reactNative = require(45            ); // 45 = react-native
 
-var _LogsStore = require(440                  ); // 440 = ../stores/LogsStore
+var _LogsTabStore = require(435                     ); // 435 = ../stores/LogsTabStore
 
-var _LogsStore2 = babelHelpers.interopRequireDefault(_LogsStore);
+var _LogsTabStore2 = babelHelpers.interopRequireDefault(_LogsTabStore);
 
-var _LogsTabActions = require(441                    ); // 441 = ../actions/LogsTabActions
+var _AppActions = require(419                    ); // 419 = ../actions/AppActions
+
+var AppActions = babelHelpers.interopRequireWildcard(_AppActions);
+
+var _LogsTabActions = require(436                        ); // 436 = ../actions/LogsTabActions
 
 var LogsTabActions = babelHelpers.interopRequireWildcard(_LogsTabActions);
 
@@ -49824,7 +50251,7 @@ var LogsTab = function (_Component) {
     var _this = babelHelpers.possibleConstructorReturn(this, (LogsTab.__proto__ || Object.getPrototypeOf(LogsTab)).call(this, props));
 
     _this.state = {
-      logList: logs.cloneWithRows(_LogsStore2.default.getAll())
+      logList: logs
     };
     return _this;
   }
@@ -49832,11 +50259,24 @@ var LogsTab = function (_Component) {
   babelHelpers.createClass(LogsTab, [{
     key: 'componentWillMount',
     value: function componentWillMount() {
+      console.log(this.props.user);
+      var user = this.props.user;
+      var rows = _LogsTabStore2.default.getLogs();
+      if (rows == undefined) {
+        rows = [];
+      }
+      this.setState({
+        logList: logs.cloneWithRows(rows)
+      });
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
       var _this2 = this;
 
-      _LogsStore2.default.addListener('change', function () {
+      _LogsTabStore2.default.addListener('change', function () {
         _this2.setState({
-          logList: logs.cloneWithRows(_LogsStore2.default.getAll())
+          logList: logs.cloneWithRows(_LogsTabStore2.default.getLogs())
         });
       });
     }
@@ -49849,7 +50289,6 @@ var LogsTab = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
 
       var testLog = {
         date: Date.now(),
@@ -49860,44 +50299,37 @@ var LogsTab = function (_Component) {
         totalCalories: 100
 
       };
+
       return _react2.default.createElement(
         _reactNative.View,
         { style: styles.list, __source: {
             fileName: _jsxFileName,
-            lineNumber: 62
+            lineNumber: 79
           }
         },
-        _react2.default.createElement(_reactNative.Button, {
-          title: 'add Log',
-          color: 'red',
-          onPress: function onPress() {
-            return _this3.addLog(testLog);
-          },
-          __source: {
-            fileName: _jsxFileName,
-            lineNumber: 63
-          }
-        }),
         _react2.default.createElement(_reactNative.ListView, {
           dataSource: this.state.logList,
           renderRow: function renderRow(rowData) {
+            console.log(rowData);
             return _react2.default.createElement(_Log2.default, {
-              id: rowData.date,
-              totalProtein: rowData.totalProtein,
-              totalCarbs: rowData.totalCarbs,
-              totalFats: rowData.totalFats,
-              totalWaterIntake: rowData.totalWaterIntake,
-              totalActivity: rowData.totalActivity,
+              key: rowData.id,
+              id: rowData.id,
+              date: rowData.log_date,
+              totalProtein: rowData.total_protein,
+              totalCarbs: rowData.total_carbs,
+              totalFats: rowData.total_fats,
+              totalWaterIntake: rowData.total_water,
+              totalActivity: rowData.total_activity,
 
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 71
+                lineNumber: 84
               }
             });
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 68
+            lineNumber: 80
           }
         })
       );
@@ -49911,133 +50343,14 @@ exports.default = LogsTab;
 
 var styles = _reactNative.StyleSheet.create({
   list: {
-    backgroundColor: 'blue',
+    backgroundColor: '#3498db',
     flex: 1
   },
   button: {
     flex: 1
   }
 });
-}, 439, null, "MacroNative/app/components/LogsTab.js");
-__d(/* MacroNative/app/stores/LogsStore.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _EventEmitter2 = require(76            ); // 76 = EventEmitter
-
-var _EventEmitter3 = babelHelpers.interopRequireDefault(_EventEmitter2);
-
-var _AppDispatcher = require(420                          ); // 420 = ../dispatcher/AppDispatcher
-
-var _AppDispatcher2 = babelHelpers.interopRequireDefault(_AppDispatcher);
-
-var LogsStore = function (_EventEmitter) {
-  babelHelpers.inherits(LogsStore, _EventEmitter);
-
-  function LogsStore() {
-    babelHelpers.classCallCheck(this, LogsStore);
-
-    var _this = babelHelpers.possibleConstructorReturn(this, (LogsStore.__proto__ || Object.getPrototypeOf(LogsStore)).call(this));
-
-    _this.logs = [{
-      date: Date('January 24, 1984'),
-      totalProtein: 20,
-      totalCarbs: 20,
-      totalFats: 20,
-      totalWaterIntake: 125,
-      totalCalories: 100
-    }, {
-      date: Date('Dec 24, 1984'),
-      totalProtein: 20,
-      totalCarbs: 20,
-      totalFats: 20,
-      totalWaterIntake: 125,
-      totalCalories: 100
-    }];
-    return _this;
-  }
-
-  babelHelpers.createClass(LogsStore, [{
-    key: 'getAll',
-    value: function getAll() {
-      return this.logs;
-    }
-  }, {
-    key: 'addLog',
-    value: function addLog(log) {
-      this.logs.push({
-        date: Date('Dec 24, 1984'),
-        totalProtein: log.totalProtein,
-        totalCarbs: log.totalCarbs,
-        totalFats: log.totalFats,
-        totalWaterIntake: log.totalWaterIntake,
-        totalCalories: log.totalCalories
-      });
-
-      this.emit('change');
-    }
-  }, {
-    key: 'handleActions',
-    value: function handleActions(action) {
-      switch (action.type) {
-        case 'ADD_LOG':
-          {
-            console.log('adding log to list...');
-            this.logs.push(action.log);
-            console.log(this.logs);
-            this.emit('change');
-          }
-      }
-    }
-  }]);
-  return LogsStore;
-}(_EventEmitter3.default);
-
-var logsStore = new LogsStore();
-_AppDispatcher2.default.register(logsStore.handleActions.bind(logsStore));
-exports.default = logsStore;
-}, 440, null, "MacroNative/app/stores/LogsStore.js");
-__d(/* MacroNative/app/actions/LogsTabActions.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.addLog = addLog;
-exports.removeLog = removeLog;
-exports.getLogs = getLogs;
-
-var _AppDispatcher = require(420                          ); // 420 = ../dispatcher/AppDispatcher
-
-var _AppDispatcher2 = babelHelpers.interopRequireDefault(_AppDispatcher);
-
-function addLog(log) {
-  console.log('inside the log action addlog with a new log...', log);
-  _AppDispatcher2.default.dispatch({
-    type: 'ADD_LOG',
-    log: log
-  });
-}
-
-function removeLog(log) {
-  _AppDispatcher2.default.dispatch({
-    type: 'REMOVE_LOG',
-    log: log
-  });
-
-  setTimeout(function () {
-    _AppDispatcher2.default.dispatch({
-      type: "RECEIVE_MENU",
-      menuItems: menuItems
-
-    });
-  }, 1000);
-}
-
-function getLogs(user) {
-  _AppDispatcher2.default.dispatch({
-    type: 'GET_LOGS',
-    user: user
-  });
-}
-}, 441, null, "MacroNative/app/actions/LogsTabActions.js");
+}, 441, null, "MacroNative/app/components/LogsTab.js");
 __d(/* MacroNative/app/components/Log.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -50058,6 +50371,7 @@ var Log = function (_Component) {
     var _this = babelHelpers.possibleConstructorReturn(this, (Log.__proto__ || Object.getPrototypeOf(Log)).call(this, props));
 
     console.log('building Log..');
+    console.log(props);
     return _this;
   }
 
@@ -50068,7 +50382,7 @@ var Log = function (_Component) {
         _reactNative.View,
         { style: styles.card, __source: {
             fileName: _jsxFileName,
-            lineNumber: 18
+            lineNumber: 19
           }
         },
         _react2.default.createElement(
@@ -50076,21 +50390,26 @@ var Log = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 19
+              lineNumber: 20
             }
           },
+          'Date: ',
           this.props.date,
           ' ',
           '\n',
+          'Protein: ',
           this.props.totalProtein,
           ' ',
           '\n',
+          'Carbs: ',
           this.props.totalCarbs,
           ' ',
           '\n',
+          'Fats: ',
           this.props.totalFats,
           ' ',
           '\n',
+          'Water: ',
           this.props.totalWaterIntake,
           ' ',
           '\n'
@@ -50128,6 +50447,196 @@ var styles = _reactNative.StyleSheet.create({
   }
 });
 }, 442, null, "MacroNative/app/components/Log.js");
+__d(/* MacroNative/app/components/AccountTab.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var _jsxFileName = '/Users/raymondtorres/Developer/MacroNative/app/components/AccountTab.js';
+
+var _react = require(12     ); // 12 = react
+
+var _react2 = babelHelpers.interopRequireDefault(_react);
+
+var _reactNative = require(45            ); // 45 = react-native
+
+var _LogsTabStore = require(435                     ); // 435 = ../stores/LogsTabStore
+
+var _LogsTabStore2 = babelHelpers.interopRequireDefault(_LogsTabStore);
+
+var _AppStore = require(423                 ); // 423 = ../stores/AppStore
+
+var _AppStore2 = babelHelpers.interopRequireDefault(_AppStore);
+
+var _AppActions = require(419                    ); // 419 = ../actions/AppActions
+
+var AppActions = babelHelpers.interopRequireWildcard(_AppActions);
+
+var _LogsTabActions = require(436                        ); // 436 = ../actions/LogsTabActions
+
+var LogsTabActions = babelHelpers.interopRequireWildcard(_LogsTabActions);
+
+var _Log = require(442    ); // 442 = ./Log
+
+var _Log2 = babelHelpers.interopRequireDefault(_Log);
+
+var logs = new _reactNative.ListView.DataSource({ rowHasChanged: function rowHasChanged(r1, r2) {
+    return r1 != r2;
+  } });
+
+var LogsTab = function (_Component) {
+  babelHelpers.inherits(LogsTab, _Component);
+
+  function LogsTab(props) {
+    babelHelpers.classCallCheck(this, LogsTab);
+
+    var _this = babelHelpers.possibleConstructorReturn(this, (LogsTab.__proto__ || Object.getPrototypeOf(LogsTab)).call(this, props));
+
+    _this.state = {
+      user: _AppStore2.default.getUser()
+    };
+    console.log(_this.state.user);
+    return _this;
+  }
+
+  babelHelpers.createClass(LogsTab, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {}
+  }, {
+    key: 'onSignOut',
+    value: function onSignOut() {
+      console.log('signing user out..');
+      AppActions.logoutUser();
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      return _react2.default.createElement(
+        _reactNative.View,
+        { style: styles.list, __source: {
+            fileName: _jsxFileName,
+            lineNumber: 48
+          }
+        },
+        _react2.default.createElement(_reactNative.Image, {
+          source: require(444                    ), // 444 = ../images/account.png
+          style: styles.profilePic,
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 49
+          }
+        }),
+        _react2.default.createElement(
+          _reactNative.Text,
+          { style: styles.text, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 53
+            }
+          },
+          'email: ',
+          this.state.user.email
+        ),
+        _react2.default.createElement(
+          _reactNative.Text,
+          { style: styles.text, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 54
+            }
+          },
+          'age: ',
+          this.state.user.age
+        ),
+        _react2.default.createElement(
+          _reactNative.Text,
+          { style: styles.text, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 55
+            }
+          },
+          'height: ',
+          this.state.user.email
+        ),
+        _react2.default.createElement(
+          _reactNative.Text,
+          { style: styles.text, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 56
+            }
+          },
+          'weight: ',
+          this.state.user.weight
+        ),
+        _react2.default.createElement(
+          _reactNative.TouchableHighlight,
+          {
+            onPress: function onPress() {
+              return _this2.onSignOut();
+            },
+            style: styles.signOutBtn,
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 57
+            }
+          },
+          _react2.default.createElement(
+            _reactNative.Text,
+            { style: styles.signOutBtnText, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 61
+              }
+            },
+            'SIGNOUT'
+          )
+        )
+      );
+    }
+  }]);
+  return LogsTab;
+}(_react.Component);
+
+exports.default = LogsTab;
+
+
+var styles = _reactNative.StyleSheet.create({
+  list: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+
+  },
+  signOutBtn: {
+    borderColor: '#c0392b',
+    borderWidth: 2,
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 50,
+    paddingRight: 50,
+    marginTop: 20
+
+  },
+  signOutBtnText: {
+    color: '#c0392b',
+    fontSize: 20
+  },
+  button: {
+    flex: 1
+  },
+  profilePic: {
+    height: 100,
+    width: 100,
+    alignItems: 'center'
+  },
+  text: {
+    fontSize: 20,
+    marginTop: 20
+  }
+});
+}, 443, null, "MacroNative/app/components/AccountTab.js");
+__d(/* MacroNative/app/images/account.png */function(global, require, module, exports) {module.exports = require(276                                         ).registerAsset({"__packager_asset":true,"httpServerLocation":"/assets/app/images","width":192,"height":192,"scales":[1],"hash":"b31698f9ebbe29dd8ecafeaca7d5de08","name":"account","type":"png"}); // 276 = react-native/Libraries/Image/AssetRegistry
+}, 444, null, "MacroNative/app/images/account.png");
 ;require(146);
 ;require(0);
-//# sourceMappingURL=index.ios.map

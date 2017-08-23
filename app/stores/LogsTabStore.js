@@ -41,6 +41,10 @@ class LogsTabStore extends EventEmitter {
     return this.activeLog;
   }
 
+  getActiveLogWater() {
+    return this.activeLogWater;
+  }
+
   addLog() {
     let log = {
       total_calories: 0,
@@ -63,10 +67,10 @@ class LogsTabStore extends EventEmitter {
     })
     .then((res) => res.json())
     .then((response) => {
-      // console.log(response);
-      console.log('got response');
+      // //console.log(response);
+      //console.log('got response');
       let logs = response;
-      // console.log(logs);
+      // //console.log(logs);
       //probably should remove this later, getting whole list of logs
       //just to refresh for newest one...
       dispatcher.dispatch({
@@ -77,29 +81,41 @@ class LogsTabStore extends EventEmitter {
   }
 
   loadLogs(logs) {
-    console.log('getting logs..');
-    console.log(logs);
+    //console.log('getting logs..');
+    // //console.log(logs);
     this.logs = logs.sort().reverse();
-    console.log(logs);
-    // console.log(new Date(this.logs[0].log_date).getMonth());
+    // //console.log(logs);
+    // //console.log(new Date(this.logs[0].log_date).getMonth());
     if(logs[0] == null) {
-      console.log('you have an empty arry');
+      //console.log('you have an empty arry');
       this.addLog();
       return 0;
     }
-    console.log(new Date(this.logs[0].log_date).getMonth());
+    //console.log(new Date(this.logs[0].log_date).getMonth());
     if (new Date(this.logs[0].log_date).getMonth() == new Date().getMonth()
      && new Date(this.logs[0].log_date).getDay() == new Date().getDay()) {
       console.log('this means that the latest date ' +
       'from db is the current date');
       this.activeLog = this.logs[0];
+
+      //fill the glasses up with water.
+      let water = this.activeLog.total_water;
+      for (let glass of this.activeLogWater) {
+        console.log(glass);
+        console.log(water);
+        if (water > 0 && !glass.isFull) {
+          glass.isFull = true;
+          water -= 8;
+        }
+      }
+      console.log(this.activeLogWater);
       this.emit('change');
-      console.log(this.activeLog);
+      // //console.log(this.activeLog);
 
       // this.activeLog.total_water
     }
     else {
-      console.log("or it's not the latest and you have to create a new one");
+      //console.log("or it's not the latest and you have to create a new one");
       this.addLog();
     }
 
@@ -110,16 +126,17 @@ class LogsTabStore extends EventEmitter {
     for (let cup in activeLogWater) {
       if (!cup.isFull) {
         cup.isFull = true;
+        this.emit('change');
       }
     }
   }
   handleActions(action) {
-    console.log('logsstore received an action.', action);
+    // //console.log('logsstore received an action.', action);
     switch(action.type) {
       case 'ADD_LOG':
-        console.log('adding log to list...');
+        //console.log('adding log to list...');
         this.logs.push(action.log);
-        console.log(this.logs);
+        //console.log(this.logs);
         this.emit('change');
         break;
       case 'GET_LOGS':
@@ -128,7 +145,7 @@ class LogsTabStore extends EventEmitter {
         break;
       case 'CREATE_LOG':
       //deprecate, you never need to create one other than initial load.
-        console.log('creating a log..');
+        //console.log('creating a log..');
         this.logs.push(action.log);
         break;
       case 'ADD_MEAL_TO_LOG':
@@ -137,18 +154,17 @@ class LogsTabStore extends EventEmitter {
         //maybe search active by id, re render that one after proc calls.
         break;
       case 'REFRESH_LOGS':
-        console.log('updating log list..');
-        console.log(action.meals[0]);
+        //console.log('updating log list..');
+        //console.log(action.meals[0]);
         let newMealList = action.meals[0].sort().reverse();
-        console.log(newMealList);
+        //console.log(newMealList);
         this.logs = newMealList;
         this.activeLog = newMealList[0];
         this.emit('change');
         break;
       case 'DRINK_WATER':
-        console.log('drinking water..');
+        //console.log('drinking water..');
         drinkWater();
-        this.emit('change');
     }
   }
 }

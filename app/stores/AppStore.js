@@ -24,7 +24,7 @@ class AppStore extends EventEmitter {
     //current date, create a new log.
   }
   getUser() {
-    console.log('in the get user method of store..');
+    //console.log('in the get user method of store..');
     // fetch('api_goes_here').then((res) => {
     //   return res.json();
     // })
@@ -35,7 +35,7 @@ class AppStore extends EventEmitter {
     return this.user;
   }
   setUser(usr) {
-    console.log('in the setUser method of the store..');
+    //console.log('in the setUser method of the store..');
 
     this.user = usr;
   }
@@ -51,11 +51,11 @@ class AppStore extends EventEmitter {
 
   loginUser(user) {
     //do action login in here if it gets too big.
-    console.log(JSON.stringify({
-      email: user.email,
-      password: user.password
-    }));
-    console.log(user);
+    // console.log(JSON.stringify({
+    //   email: user.email,
+    //   password: user.password
+    // }));
+    //console.log(user);
     fetch('http://localhost:8080/auth/login', {
       method: 'POST',
       headers: {
@@ -69,23 +69,23 @@ class AppStore extends EventEmitter {
     })
     .then((res) => res.json())
     .then((resData) => {
-      console.log(resData);
+      //console.log(resData);
       if(resData.email && resData.password) {
-        console.log('you have a user');
-        console.log('no errors');
-        console.log(resData);
-        console.log(JSON.stringify(resData));
-        console.log('not a fail');
+        //console.log('you have a user');
+        //console.log('no errors');
+        //console.log(resData);
+        //console.log(JSON.stringify(resData));
+        //console.log('not a fail');
         this.setUser(resData);
         this.setIsLoggedIn(true);
 
-        console.log(this.user);
+        //console.log(this.user);
       }
-      console.log(this.user);
+      //console.log(this.user);
       this.emit('change');
     })
     .catch((err) => {
-      console.log(err);
+      //console.log(err);
       this.emit('change');
     });
 
@@ -107,7 +107,7 @@ class AppStore extends EventEmitter {
         this.user = null;
         this.emit('change');
       default:
-        console.log('no case for action...' + action.type);
+        //console.log('no case for action...' + action.type);
 
     }
   }

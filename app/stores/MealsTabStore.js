@@ -29,26 +29,26 @@ class MealsTabStore extends EventEmitter {
   }
 
   addMealToLog(meal) {
-    console.log('adding meal to list...');
+    //console.log('adding meal to list...');
     //do date check in here and add to according user's log after date check.
 
   }
 
   getInitialMeals(user) {
-    console.log('fetching initial render info for meals from db..');
+    //console.log('fetching initial render info for meals from db..');
   }
 
   handleActions(action) { //registered callback function for dispatcher.
-    // console.log('mealtabstore received an action', action);
+    // //console.log('mealtabstore received an action', action);
     switch(action.type) {
       case 'GET_MEALS':
         if(action.meals) {
-          console.log(action.meals);
+          // //console.log(action.meals);
           this.meals = action.meals;
           this.emit('change');
         }
         else {
-          console.log('empty response from db.');
+          //console.log('empty response from db.');
         }
         break;
     }

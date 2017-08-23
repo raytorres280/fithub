@@ -25,15 +25,15 @@ class MacrosTabStore extends EventEmitter {
   drinkWater(size) {
     this.water = this.water + 8;
     if (size === 1) {
-      console.log('drinking glass of water..')
+      //console.log('drinking glass of water..')
 
     }
     else {
-      console.log('drinking bottle of water...')
+      //console.log('drinking bottle of water...')
     }
   }
   addMiles(){
-    console.log('trying to track workouts..')
+    //console.log('trying to track workouts..')
   }
 }
 

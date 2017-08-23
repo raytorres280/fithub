@@ -1,7 +1,7 @@
 import dispatcher from '../dispatcher/AppDispatcher';
 
 export function addLog(log) {
-  console.log('inside the log action addlog with a new log...', log);
+  //console.log('inside the log action addlog with a new log...', log);
   dispatcher.dispatch({
     type: 'ADD_LOG',
     log
@@ -33,18 +33,18 @@ export function getLogs(user) {
   })
   .then((res) => res.json())
   .then((response) => {
-    console.log(response);
-    console.log('got response');
+    // //console.log(response);
+    //console.log('got response');
     var logs = response;
-    console.log(logs);
+    // //console.log(logs);
     dispatcher.dispatch({
       type: 'GET_LOGS',
       logs
     });
       })
       .catch((error) => {
-        console.log('getlog api error');
-        console.log(error);
+        //console.log('getlog api error');
+        //console.log(error);
         dispatcher.dispatch({
           type: 'GET_LOGS',
           logs: []
@@ -64,28 +64,31 @@ export function addMealToLog(mealLog) {
   })
   .then((res) => res.json())
   .then((resJson) => {
-    console.log(resJson);;
+    //console.log(resJson);;
   })
   .catch((err) => {
-    console.log(err);
+    //console.log(err);
   });
 
 
 }
 
 export function drinkWater(logId) {
+  //console.log('77 ' + logId);
+  //console.log(JSON.stringify({logId: logId}))
+  logId =
   fetch('http://localhost:8080/api/water', {
-    method: 'PUT',
+    method: 'POST',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(logId)
+    body: JSON.stringify({logId: logId})
   })
   .then((res) => res.json())
   .then((resJson) => {
-    console.log('drank water..');
-    console.log(resJson);
+    //console.log('drank water..');
+    //console.log(resJson);
     let water = {
       isFull: true
     }

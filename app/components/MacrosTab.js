@@ -4,7 +4,6 @@ import GlassList from './GlassOfWaterList.js';
 import MacrosTabStore from '../stores/MacrosTabStore';
 import LogsTabStore from '../stores/LogsTabStore';
 import MealsTab from './MealsTab';
-import * as LogsTabActions from '../actions/LogsTabActions';
 
 import {
   AppRegistry,
@@ -26,13 +25,13 @@ export default class MacrosTab extends Component {
   }
 
   componentWillUnmount() {
-    console.log('this destroys when new tab opens..');
+    //console.log('this destroys when new tab opens..');
   }
 
   componentDidMount() {
     LogsTabStore.addListener('change', () => {
-      console.log('the current log has changed.');
-      console.log(LogsTabStore.getActiveLog());
+      //console.log('the current log has changed.');
+      //console.log(LogsTabStore.getActiveLog());
       this.setState({
         log: LogsTabStore.getActiveLog()
       });
@@ -47,9 +46,6 @@ export default class MacrosTab extends Component {
   //   LogsTabActions.addMealToLog(meal);
   // }
 
-  drinkWater() {
-    LogsTabActions.drinkWater(this.state.log.user_id);
-  }
   render() {
     let proteins = 0,
     carbs = 0,
@@ -58,15 +54,13 @@ export default class MacrosTab extends Component {
     water = 0;
 
     if(this.state.log != null) {
-      proteins = this.state.log.total_protein;
+      proteins = this.state.log.total_proteins;
       carbs = this.state.log.total_carbs;
       fats = this.state.log.total_fats;
       calories = this.state.log.total_calories;
       water = this.state.log.total_water;
-
-      console.log('in the if case.');
     }
-    console.log(proteins);
+    //console.log(proteins);
     return (
       <View style={styles.macrostab}>
         <View style={styles.title}>

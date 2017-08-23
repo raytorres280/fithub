@@ -33,7 +33,7 @@ export default class LogsTab extends Component {
   }
 
   componentWillMount() {
-    console.log(this.props.user);
+    //console.log(this.props.user);
     let user = this.props.user;
     let rows = LogsTabStore.getLogs();
     if (rows == undefined) {
@@ -53,7 +53,7 @@ export default class LogsTab extends Component {
   }
 
   addLog(log) {
-    console.log(log);
+    //console.log(log);
     LogsTabActions.addLog(log);
 
   }
@@ -62,7 +62,7 @@ export default class LogsTab extends Component {
 
 
   render() {
-    // console.log(testLog); data still intact here..
+    // //console.log(testLog); data still intact here..
 
     const testLog = {
       date:Date.now(),
@@ -80,12 +80,12 @@ export default class LogsTab extends Component {
         <ListView
           dataSource={ this.state.logList }
           renderRow={ (rowData) => {
-            console.log(rowData);
+            //console.log(rowData);
             return <Log
               key={ rowData.id }
               id={ rowData.id }
               date={ rowData.log_date }
-              totalProtein={ rowData.total_protein }
+              totalProteins={ rowData.total_proteins }
               totalCarbs={ rowData.total_carbs }
               totalFats={ rowData.total_fats }
               totalWaterIntake={ rowData.total_water }

@@ -10,8 +10,8 @@ export default class Log extends Component {
 
   constructor(props) {
     super(props);
-    console.log('building Log..');
-    console.log(props);
+    //console.log('building Log..');
+    // //console.log(props);
   }
 
   render() {
@@ -19,7 +19,7 @@ export default class Log extends Component {
       <View style={ styles.card }>
         <Text>
           Date: { this.props.date } {'\n'}
-          Protein: { this.props.totalProtein } {'\n'}
+          Proteins: { this.props.totalProteins } {'\n'}
           Carbs: { this.props.totalCarbs } {'\n'}
           Fats: { this.props.totalFats } {'\n'}
           Water: { this.props.totalWaterIntake } {'\n'}

@@ -8,18 +8,18 @@ import * as MealActions from '../actions/MealActions';
 export default class Meal extends Component {
   constructor(props) {
     super(props)
-    console.log('building meal..')
+    //console.log('building meal..')
 
   }
 
   addMealToLog() {
-    console.log('adding meal to log');
-    console.log(this.props);
+    //console.log('adding meal to log');
+    //console.log(this.props);
     let mealLog = {
       log_id: LogsTabStore.getActiveLog().id,
       meal_id: this.props.id,
     }
-    console.log(mealLog);
+    //console.log(mealLog);
     MealActions.addMealToLog(mealLog);
   }
 
