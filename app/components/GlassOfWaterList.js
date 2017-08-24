@@ -13,22 +13,41 @@ import {
 import LogsTabStore from '../stores/LogsTabStore';
 
 export default class GlassList extends Component {
+
   constructor(props) {
     super(props);
-    //console.log('water intake is: ' + this.props.water);
     this.state = {
-      waterIntake: this.props.water,
-      glasses: LogsTabStore.getActiveLogWater()
+      waterIntake: props.water,
+      glasses: [
+        {isFull: false},
+        {isFull: false},
+        {isFull: false},
+        {isFull: false},
+        {isFull: false},
+        {isFull: false},
+        {isFull: false},
+        {isFull: false}
+      ]
     }
-    console.log(this.state.glasses);
-    console.log(this.state.glasses[0].isFull);
+
   }
 
-  componentDidMount() {
-    LogsTabStore.addListener('change', () => {
-      this.setState({glasses: LogsTabStore.getActiveLogWater()});
+  componentWillReceiveProps(newProp) {
+    let water = newProp.water;
+    let glassArry = this.state.glasses.slice();
+
+    for (let glass of glassArry) {
+      if (water > 0 && !glass.isFull) {
+        glass.isFull = true;
+        water -= 8;
+      }
+    }
+    this.setState({
+      waterIntake: newProp,
+      glasses: glassArry
     });
   }
+
   render() {
     return(
       <View>
@@ -47,7 +66,6 @@ export default class GlassList extends Component {
       </View>
     );
   }
-
 }
 
 const styles = StyleSheet.create({

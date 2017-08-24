@@ -25,7 +25,7 @@ export default class MacrosTab extends Component {
   }
 
   componentWillUnmount() {
-    //console.log('this destroys when new tab opens..');
+    // console.log('this destroys when new tab opens..');
   }
 
   componentDidMount() {
@@ -52,6 +52,7 @@ export default class MacrosTab extends Component {
     fats = 0,
     calories = 0,
     water = 0;
+    console.log('macrostab rendered');
 
     if(this.state.log != null) {
       proteins = this.state.log.total_proteins;
@@ -60,7 +61,7 @@ export default class MacrosTab extends Component {
       calories = this.state.log.total_calories;
       water = this.state.log.total_water;
     }
-    //console.log(proteins);
+
     return (
       <View style={styles.macrostab}>
         <View style={styles.title}>

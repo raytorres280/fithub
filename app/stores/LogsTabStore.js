@@ -1,8 +1,4 @@
 import EventEmitter from 'EventEmitter';
-
-
-//bring in some kind of module/service that connects to db.
-
 import dispatcher from '../dispatcher/AppDispatcher';
 
 //this is prob antipattern. Change later when everything is in one store.
@@ -21,9 +17,9 @@ class LogsTabStore extends EventEmitter {
       {isFull: false},
       {isFull: false},
       {isFull: false},
-      {isFull: false}, //change later? 8 by 8 rule for now. static
-      {isFull: false}, // maybe do it by weight or gender. gender little bit easier.
-      {isFull: false}, //maybe change glasses to an int and spit out water glass components
+      {isFull: false},
+      {isFull: false},
+      {isFull: false},
       {isFull: false},
       {isFull: false}
     ]
@@ -48,7 +44,7 @@ class LogsTabStore extends EventEmitter {
   addLog() {
     let log = {
       total_calories: 0,
-      total_protein: 0,
+      total_proteins: 0,
       total_carbs: 0,
       total_fats: 0,
       total_water: 0,
@@ -98,24 +94,10 @@ class LogsTabStore extends EventEmitter {
       'from db is the current date');
       this.activeLog = this.logs[0];
 
-      //fill the glasses up with water.
-      let water = this.activeLog.total_water;
-      for (let glass of this.activeLogWater) {
-        console.log(glass);
-        console.log(water);
-        if (water > 0 && !glass.isFull) {
-          glass.isFull = true;
-          water -= 8;
-        }
-      }
-      console.log(this.activeLogWater);
       this.emit('change');
-      // //console.log(this.activeLog);
-
-      // this.activeLog.total_water
     }
     else {
-      //console.log("or it's not the latest and you have to create a new one");
+      console.log("or it's not the latest and you have to create a new one");
       this.addLog();
     }
 

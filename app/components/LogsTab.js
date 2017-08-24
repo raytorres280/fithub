@@ -62,18 +62,6 @@ export default class LogsTab extends Component {
 
 
   render() {
-    // //console.log(testLog); data still intact here..
-
-    const testLog = {
-      date:Date.now(),
-      totalProtein: 20,
-      totalCarbs: 20,
-      totalFats: 20,
-      totalWaterIntake: 125,
-      totalCalories: 100
-
-    }
-
 
     return(
       <View style={ styles.list }>
