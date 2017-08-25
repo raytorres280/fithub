@@ -87,14 +87,8 @@ export function drinkWater(logId) {
   })
   .then((res) => res.json())
   .then((resJson) => {
-    //console.log('drank water..');
-    //console.log(resJson);
-    let water = {
-      isFull: true
-    }
     dispatcher.dispatch({
-      type: 'DRINK_WATER',
-      water
+      type: 'DRINK_WATER'
     });
   })
   .catch((err) => {

@@ -105,12 +105,8 @@ class LogsTabStore extends EventEmitter {
   }
 
   drinkWater() {
-    for (let cup in activeLogWater) {
-      if (!cup.isFull) {
-        cup.isFull = true;
-        this.emit('change');
-      }
-    }
+    this.activeLog.total_water += 8;
+    this.emit('change');
   }
   handleActions(action) {
     // //console.log('logsstore received an action.', action);
@@ -145,8 +141,8 @@ class LogsTabStore extends EventEmitter {
         this.emit('change');
         break;
       case 'DRINK_WATER':
-        //console.log('drinking water..');
-        drinkWater();
+        this.drinkWater();
+        break;
     }
   }
 }

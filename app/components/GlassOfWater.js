@@ -14,20 +14,28 @@ import AppStore from '../stores/AppStore';
 import LogsTabStore from '../stores/LogsTabStore';
 
 export default class GlassFullIcon extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
       isFull: props.isFull
     };
   }
+
+  componentWillReceiveProps(newProp) {
+    console.log(newProp);
+  }
+
   fillGlass() {
     this.setState({isFull: true});
   }
+
   emptyGlass() {
     this.setState({isFull: false});
   }
+
   drinkWater() {
-    if (!isFull) {
+    if (!this.state.isFull) {
       //this is stupid, UI updates are waiting on the server here.
       LogsTabActions.drinkWater(LogsTabStore.getActiveLog().id);
     }
@@ -35,6 +43,7 @@ export default class GlassFullIcon extends Component {
       console.log('this cup is full.');
     }
   }
+
   render() {
     return (
       <View>

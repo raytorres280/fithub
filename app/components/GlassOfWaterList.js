@@ -34,7 +34,16 @@ export default class GlassList extends Component {
 
   componentWillReceiveProps(newProp) {
     let water = newProp.water;
-    let glassArry = this.state.glasses.slice();
+    let glassArry = [
+      {isFull: false},
+      {isFull: false},
+      {isFull: false},
+      {isFull: false},
+      {isFull: false},
+      {isFull: false},
+      {isFull: false},
+      {isFull: false}
+    ];
 
     for (let glass of glassArry) {
       if (water > 0 && !glass.isFull) {
