@@ -24,7 +24,6 @@ export default class MealsTab extends Component {
   }
 
   componentWillMount() {
-    //console.log(this.props.user);
     let user = this.props.user;
     let rows = MealsTabStore.getMeals();
     if (rows == undefined) {
@@ -45,7 +44,6 @@ export default class MealsTab extends Component {
   }
 
   render() {
-    //console.log(this.state.mealList);
     return(
       <View style={styles.list}>
         <ListView

@@ -33,7 +33,6 @@ export default class LogsTab extends Component {
   }
 
   componentWillMount() {
-    //console.log(this.props.user);
     let user = this.props.user;
     let rows = LogsTabStore.getLogs();
     if (rows == undefined) {
@@ -53,7 +52,6 @@ export default class LogsTab extends Component {
   }
 
   addLog(log) {
-    //console.log(log);
     LogsTabActions.addLog(log);
 
   }
@@ -68,7 +66,6 @@ export default class LogsTab extends Component {
         <ListView
           dataSource={ this.state.logList }
           renderRow={ (rowData) => {
-            //console.log(rowData);
             return <Log
               key={ rowData.id }
               id={ rowData.id }

@@ -12,7 +12,6 @@ export function addMealToLog(mealLog) {
   })
   .then((response) => response.json())
   .then((res) => {
-    //console.log(res);
     let meals = res;
     dispatcher.dispatch({
       type: 'REFRESH_LOGS',
@@ -20,7 +19,7 @@ export function addMealToLog(mealLog) {
     });
   })
   .catch((err) => {
-    //console.log(err);
+    console.log(err);
   });
 }
 
@@ -36,14 +35,13 @@ export function getMeals() {
   .then((res) => res.json())
   .then((response) => {
     let meals = response;
-    //console.log(meals);
     dispatcher.dispatch({
       type: "GET_MEALS",
       meals
     });
   })
   .catch((err) => {
-    //console.log(err);
+    console.log(err);
   });
 
 

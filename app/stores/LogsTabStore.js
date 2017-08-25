@@ -63,10 +63,7 @@ class LogsTabStore extends EventEmitter {
     })
     .then((res) => res.json())
     .then((response) => {
-      // //console.log(response);
-      //console.log('got response');
       let logs = response;
-      // //console.log(logs);
       //probably should remove this later, getting whole list of logs
       //just to refresh for newest one...
       dispatcher.dispatch({
@@ -77,17 +74,11 @@ class LogsTabStore extends EventEmitter {
   }
 
   loadLogs(logs) {
-    //console.log('getting logs..');
-    // //console.log(logs);
     this.logs = logs.sort().reverse();
-    // //console.log(logs);
-    // //console.log(new Date(this.logs[0].log_date).getMonth());
     if(logs[0] == null) {
-      //console.log('you have an empty arry');
       this.addLog();
       return 0;
     }
-    //console.log(new Date(this.logs[0].log_date).getMonth());
     if (new Date(this.logs[0].log_date).getMonth() == new Date().getMonth()
      && new Date(this.logs[0].log_date).getDay() == new Date().getDay()) {
       console.log('this means that the latest date ' +
@@ -109,22 +100,9 @@ class LogsTabStore extends EventEmitter {
     this.emit('change');
   }
   handleActions(action) {
-    // //console.log('logsstore received an action.', action);
     switch(action.type) {
-      case 'ADD_LOG':
-        //console.log('adding log to list...');
-        this.logs.push(action.log);
-        //console.log(this.logs);
-        this.emit('change');
-        break;
       case 'GET_LOGS':
         this.loadLogs(action.logs);
-        // this.emit('change');
-        break;
-      case 'CREATE_LOG':
-      //deprecate, you never need to create one other than initial load.
-        //console.log('creating a log..');
-        this.logs.push(action.log);
         break;
       case 'ADD_MEAL_TO_LOG':
         LogsTabActions.getLogs(this.user);
@@ -132,10 +110,7 @@ class LogsTabStore extends EventEmitter {
         //maybe search active by id, re render that one after proc calls.
         break;
       case 'REFRESH_LOGS':
-        //console.log('updating log list..');
-        //console.log(action.meals[0]);
         let newMealList = action.meals[0].sort().reverse();
-        //console.log(newMealList);
         this.logs = newMealList;
         this.activeLog = newMealList[0];
         this.emit('change');

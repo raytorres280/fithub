@@ -24,14 +24,8 @@ export default class MacrosTab extends Component {
     };
   }
 
-  componentWillUnmount() {
-    // console.log('this destroys when new tab opens..');
-  }
-
   componentDidMount() {
     LogsTabStore.addListener('change', () => {
-      //console.log('the current log has changed.');
-      //console.log(LogsTabStore.getActiveLog());
       this.setState({
         log: LogsTabStore.getActiveLog()
       });
@@ -42,17 +36,12 @@ export default class MacrosTab extends Component {
     this.setState({ modalVisible: visible });
   }
 
-  // addMealToLog(meal) {
-  //   LogsTabActions.addMealToLog(meal);
-  // }
-
   render() {
     let proteins = 0,
     carbs = 0,
     fats = 0,
     calories = 0,
     water = 0;
-    console.log('macrostab rendered');
 
     if(this.state.log != null) {
       proteins = this.state.log.total_proteins;

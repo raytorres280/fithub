@@ -10,8 +10,6 @@ export default class Log extends Component {
 
   constructor(props) {
     super(props);
-    //console.log('building Log..');
-    // //console.log(props);
   }
 
   render() {

@@ -32,14 +32,12 @@ export default class LogsTab extends Component {
     this.state = {
       user: AppStore.getUser()
     }
-    //console.log(this.state.user);
   }
 
   componentDidMount() {
   }
 
   onSignOut() {
-    //console.log('signing user out..');
     AppActions.logoutUser();
   }
   render() {

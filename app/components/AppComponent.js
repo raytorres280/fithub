@@ -29,7 +29,6 @@ export default class AppComponent extends Component {
 
   componentDidMount() {
     AppStore.addListener('change', () => {
-      //console.log('change detected');
       let user = AppStore.getUser();
 
       if(user == null) {
@@ -41,8 +40,6 @@ export default class AppComponent extends Component {
       }
 
       if (user.email && user.password) {
-        //console.log('good password');
-        //console.log(user);
         this.setState({
           user: user,
           isLoggedIn: true
@@ -51,8 +48,7 @@ export default class AppComponent extends Component {
         MealActions.getMeals(user);
         LogsTabActions.getLogs(user);
       } else {
-        //user not found
-          //console.log('user not found');
+          console.log('user not found');
           this.setState({ loginFailed: true });
           render();
       }
@@ -60,20 +56,7 @@ export default class AppComponent extends Component {
 
   }
 
-  componentWillUpdate() {
-    //console.log('component will update');
-    //run api's for all the data for screens.
-
-    if (this.state.isLoggedIn) {
-      // on login, use apis
-      //console.log('user is logged in, fetch API');
-
-    }
-  }
-
   login(user) {
-    //do the api.
-    //then set the state.
     AppActions.login(user);
   }
 
@@ -82,7 +65,7 @@ export default class AppComponent extends Component {
   }
 
   createAccount() {
-
+    //change view to create account screen
   }
 
   render() {

@@ -1,6 +1,7 @@
 import EventEmitter from 'EventEmitter';
 
 class MacrosTabStore extends EventEmitter {
+  
   constructor() {
     super()
     this.protein = 25;
@@ -22,22 +23,10 @@ class MacrosTabStore extends EventEmitter {
     };
   }
 
-  drinkWater(size) {
-    this.water = this.water + 8;
-    if (size === 1) {
-      //console.log('drinking glass of water..')
+  addMiles() {
 
-    }
-    else {
-      //console.log('drinking bottle of water...')
-    }
-  }
-  addMiles(){
-    //console.log('trying to track workouts..')
   }
 }
-
-
 
 const macrosTabStore = new MacrosTabStore;
 

@@ -15,7 +15,6 @@ export default class Login extends Component {
 
   constructor(props) {
     super(props);
-    //console.log('building the login screen');
     this.state = {
       email: 'ray@aol.com',
       password: 'root',
@@ -32,7 +31,6 @@ export default class Login extends Component {
     this.loginUser();
   }
   componentWillUpdate() {
-    //console.log('update lifecycle method..');
     if(this.props.loginFailed) {
       this.setState({ showProgress: false });
     }
