@@ -40,10 +40,6 @@ export function getLogs(user) {
       })
       .catch((error) => {
         console.log(error);
-        dispatcher.dispatch({
-          type: 'GET_LOGS',
-          logs: []
-        });
       });
 
 }

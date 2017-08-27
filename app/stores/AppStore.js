@@ -77,6 +77,9 @@ class AppStore extends EventEmitter {
         this.user = null;
         this.emit('change');
         break;
+      case 'USER_EXISTS':
+        this.emit('USER_EXISTS');
+        break;
     }
   }
 }

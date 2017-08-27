@@ -5,20 +5,24 @@ import {
   TextInput,
   Text,
   TouchableHighlight,
-  ActivityIndicator
+  ActivityIndicator,
+  Modal
 } from 'react-native';
 
 import * as AppActions from '../actions/AppActions';
 import AppStore from '../stores/AppStore';
+
+import CreateAccount from './CreateAccount';
 
 export default class Login extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      email: 'ray@aol.com',
-      password: 'root',
-      showProgress: false
+      email: '',
+      password: '',
+      showProgress: false,
+      modalVisible: false
     }
   }
 
@@ -28,7 +32,7 @@ export default class Login extends Component {
     }
   }
   componentDidMount() {
-    this.loginUser();
+    // this.loginUser();
   }
   componentWillUpdate() {
     if(this.props.loginFailed) {
@@ -44,8 +48,11 @@ export default class Login extends Component {
     AppActions.loginUser(user);
   }
 
-  createAccount() {
-    //console.log('creating account..');
+  onCreateAccount() {
+    // console.log('creating account..');
+    this.setState({
+      modalVisible: true
+    })
   }
 
   render() {
@@ -79,7 +86,7 @@ export default class Login extends Component {
         {/* bring create account button to bottom of screen. add forgot pwd */}
         <TouchableHighlight
           style={styles.loginBtn}
-          onPress={() => this.createAccount()}
+          onPress={() => this.onCreateAccount()}
         >
           <Text style={styles.btnText}>Create Account</Text>
         </TouchableHighlight>
@@ -90,6 +97,17 @@ export default class Login extends Component {
           size="large"
         />
         { errMsg }
+
+
+        <View style={{marginTop: 22}}>
+          <Modal
+            animationType={ "slide" }
+            transparent={ false }
+            visible={ this.state.modalVisible }
+            >
+              <CreateAccount />
+            </Modal>
+        </View>
       </View>
     );
   }

@@ -13,16 +13,6 @@ class LogsTabStore extends EventEmitter {
 
     ];
     this.activeLog = null;
-    this.activeLogWater = [
-      {isFull: false},
-      {isFull: false},
-      {isFull: false},
-      {isFull: false},
-      {isFull: false},
-      {isFull: false},
-      {isFull: false},
-      {isFull: false}
-    ]
   }
 
   getUser() {
@@ -66,16 +56,16 @@ class LogsTabStore extends EventEmitter {
       let logs = response;
       //probably should remove this later, getting whole list of logs
       //just to refresh for newest one...
-      dispatcher.dispatch({
-        type: 'GET_LOGS',
-        logs
-      });
+      LogsTabActions.getLogs(this.user);
+    })
+    .catch((err) => {
+      console.log(err);
     });
   }
 
   loadLogs(logs) {
     this.logs = logs.sort().reverse();
-    if(logs[0] == null) {
+    if(logs.length == 0) {
       this.addLog();
       return 0;
     }
@@ -99,6 +89,7 @@ class LogsTabStore extends EventEmitter {
     this.activeLog.total_water += 8;
     this.emit('change');
   }
+
   handleActions(action) {
     switch(action.type) {
       case 'GET_LOGS':
