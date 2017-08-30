@@ -40,7 +40,7 @@ export default class AppComponent extends Component {
         return 0;
       }
 
-      if (user.email && user.password) {
+      if (user.email) {
         //console.log('good password');
         //console.log(user);
         this.setState({

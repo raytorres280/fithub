@@ -7,12 +7,15 @@ class AppStore extends EventEmitter {
     super();
     this.user = {
       email: '',
-      password: '',
       id: -1,
       name: '',
       age: 0,
       height: 0,
-      weight: 0
+      weight: 0,
+      calories_per_Day: 0,
+      daily_req_carbs: 0,
+      daily_req_fats: 0,
+      daily_req_proteins: 0
     },
     this.isLoggedIn = false;
     this.loginFailed = false;
@@ -24,14 +27,6 @@ class AppStore extends EventEmitter {
     //current date, create a new log.
   }
   getUser() {
-    //console.log('in the get user method of store..');
-    // fetch('api_goes_here').then((res) => {
-    //   return res.json();
-    // })
-    // .then((results) => {
-    //   this.setState({showProgress: false});
-    //   //make a decision based on results what to set the user state to.
-    // });
     return this.user;
   }
   setUser(usr) {
@@ -69,23 +64,14 @@ class AppStore extends EventEmitter {
     })
     .then((res) => res.json())
     .then((resData) => {
-      //console.log(resData);
-      if(resData.email && resData.password) {
-        //console.log('you have a user');
-        //console.log('no errors');
-        //console.log(resData);
-        //console.log(JSON.stringify(resData));
-        //console.log('not a fail');
+      if(resData.email) {
         this.setUser(resData);
         this.setIsLoggedIn(true);
-
-        //console.log(this.user);
       }
-      //console.log(this.user);
       this.emit('change');
     })
     .catch((err) => {
-      //console.log(err);
+      console.log(err);
       this.emit('change');
     });
 

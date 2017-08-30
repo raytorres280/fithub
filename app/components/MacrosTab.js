@@ -3,6 +3,7 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import GlassList from './GlassOfWaterList.js';
 import MacrosTabStore from '../stores/MacrosTabStore';
 import LogsTabStore from '../stores/LogsTabStore';
+import AppStore from '../stores/AppStore';
 import MealsTab from './MealsTab';
 
 import {
@@ -42,9 +43,25 @@ export default class MacrosTab extends Component {
     this.setState({ modalVisible: visible });
   }
 
-  // addMealToLog(meal) {
-  //   LogsTabActions.addMealToLog(meal);
-  // }
+  calcCalories() {
+    return this.state.log.total_calories / AppStore.getUser().calories_per_day
+  }
+
+  calcProteins() {
+    let daily = AppStore.getUser().daily_req_proteins;
+    console.log(daily);
+    let total = this.state.log.total_proteins;
+    total = total / daily * 100;
+    return total;
+  }
+
+  calcCarbs() {
+    return this.state.log.total_carbs / AppStore.getUser().daily_req_carbs * 100;
+  }
+
+  calcFats() {
+    return this.state.log.total_fats / AppStore.getUser().daily_req_fats * 100;
+  }
 
   render() {
     let proteins = 0,
@@ -54,10 +71,11 @@ export default class MacrosTab extends Component {
     water = 0;
     console.log('macrostab rendered');
 
-    if(this.state.log != null) {
-      proteins = this.state.log.total_proteins;
-      carbs = this.state.log.total_carbs;
-      fats = this.state.log.total_fats;
+    if(this.state.log != null && AppStore.getUser().email) {
+      //get percentages for graphs
+      proteins = this.calcProteins();
+      carbs = this.calcCarbs();
+      fats = this.calcFats();
       calories = this.state.log.total_calories;
       water = this.state.log.total_water;
     }
