@@ -52,11 +52,7 @@ class AppStore extends EventEmitter {
     })
     .then((res) => res.json())
     .then((resData) => {
-<<<<<<< HEAD
-      if(resData.email && resData.password) {
-=======
       if(resData.email) {
->>>>>>> HEAD@{1}
         this.setUser(resData);
         this.setIsLoggedIn(true);
       }

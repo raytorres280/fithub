@@ -37,8 +37,6 @@ export default class MacrosTab extends Component {
     this.setState({ modalVisible: visible });
   }
 
-<<<<<<< HEAD
-=======
   calcCalories() {
     return this.state.log.total_calories / AppStore.getUser().calories_per_day
   }
@@ -58,8 +56,7 @@ export default class MacrosTab extends Component {
   calcFats() {
     return this.state.log.total_fats / AppStore.getUser().daily_req_fats * 100;
   }
-
->>>>>>> HEAD@{1}
+  
   render() {
     let proteins = 0,
     carbs = 0,
