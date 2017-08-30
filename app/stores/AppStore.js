@@ -7,12 +7,15 @@ class AppStore extends EventEmitter {
     super();
     this.user = {
       email: '',
-      password: '',
       id: -1,
       name: '',
       age: 0,
       height: 0,
-      weight: 0
+      weight: 0,
+      calories_per_Day: 0,
+      daily_req_carbs: 0,
+      daily_req_fats: 0,
+      daily_req_proteins: 0
     },
     this.isLoggedIn = false;
     this.loginFailed = false;
@@ -49,7 +52,11 @@ class AppStore extends EventEmitter {
     })
     .then((res) => res.json())
     .then((resData) => {
+<<<<<<< HEAD
       if(resData.email && resData.password) {
+=======
+      if(resData.email) {
+>>>>>>> HEAD@{1}
         this.setUser(resData);
         this.setIsLoggedIn(true);
       }

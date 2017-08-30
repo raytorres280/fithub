@@ -39,7 +39,13 @@ export default class AppComponent extends Component {
         return 0;
       }
 
+<<<<<<< HEAD
       if (user.email && user.password) {
+=======
+      if (user.email) {
+        //console.log('good password');
+        //console.log(user);
+>>>>>>> HEAD@{1}
         this.setState({
           user: user,
           isLoggedIn: true
