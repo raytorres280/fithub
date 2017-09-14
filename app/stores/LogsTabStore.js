@@ -43,7 +43,7 @@ class LogsTabStore extends EventEmitter {
       user_id: AppStore.getUser().id,
       log_date: new Date()
     };
-    fetch('http://localhost:8080/api/createLog', {
+    fetch('https://macro-native-server.herokuapp.com/api/createLog', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

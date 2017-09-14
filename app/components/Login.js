@@ -6,7 +6,9 @@ import {
   Text,
   TouchableHighlight,
   ActivityIndicator,
-  Modal
+  Modal,
+  Switch,
+  AsyncStorage
 } from 'react-native';
 
 import * as AppActions from '../actions/AppActions';
@@ -19,10 +21,11 @@ export default class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: '',
-      password: '',
+      email: 'ray@aol.com', //hardcoded
+      password: 'root', //hardcoded
       showProgress: false,
-      modalVisible: false
+      modalVisible: false,
+      rememberLogin: true //hardcoded
     }
   }
 
@@ -31,19 +34,28 @@ export default class Login extends Component {
       this.setState({ showProgress: false });
     }
   }
+
   componentDidMount() {
-    // this.loginUser();
+    // this.loginUser(); //hardcoded
   }
+
   componentWillUpdate() {
     if(this.props.loginFailed) {
       this.setState({ showProgress: false });
+    }
+  }
+
+  componentDidUpdate() {
+    if (!this.state.rememberLogin) {
+      AsyncStorage.clear();
     }
   }
   loginUser() {
     this.setState({showProgress: true});
     let user = {
       email: this.state.email,
-      password: this.state.password
+      password: this.state.password,
+      rememberLogin: this.state.rememberLogin
     }
     AppActions.loginUser(user);
   }
@@ -63,6 +75,7 @@ export default class Login extends Component {
     }
     return(
       <View style={styles.container}>
+        <View style={styles.logo}><Text>FitHub</Text></View>
         <TextInput
           autoCapitalize='none'
           style={styles.input}
@@ -76,6 +89,14 @@ export default class Login extends Component {
           onChangeText={(text) => this.setState({password: text})}
           value={this.state.password}
           placeholder="password"
+        />
+        <Switch
+          value={this.state.rememberLogin}
+          style={styles.switch}
+          onTintColor='orange'
+          onValueChange={() => this.setState(
+            {rememberLogin: !this.state.rememberLogin}
+          )}
         />
         <TouchableHighlight
           style={styles.loginBtn}
@@ -148,6 +169,16 @@ const styles = {
   },
   indicator: {
     margin: 10
+  },
+  logo: {
+    height: 100,
+    backgroundColor: 'orange',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  switch: {
+    marginLeft: 300,
+    marginTop: 10
   }
 
 }

@@ -48356,7 +48356,7 @@ var AppStore = function (_EventEmitter) {
         password: user.password
       }));
       console.log(user);
-      fetch('http://localhost:8080/auth/login', {
+      fetch('https://macro-native-server.herokuapp.com/auth/login', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -49631,7 +49631,7 @@ var LogsTabStore = function (_EventEmitter) {
         user_id: _AppStore2.default.getUser().id,
         log_date: new Date()
       };
-      fetch('http://localhost:8080/api/createLog', {
+      fetch('https://macro-native-server.herokuapp.com/api/createLog', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -49766,7 +49766,7 @@ function createLog() {
 }
 
 function getLogs(user) {
-  fetch('http://localhost:8080/api/logs', {
+  fetch('https://macro-native-server.herokuapp.com/api/logs', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -49795,7 +49795,7 @@ function getLogs(user) {
 }
 
 function addMealToLog(mealLog) {
-  fetch('http://localhost:8080/api/meal-logs', {
+  fetch('https://macro-native-server.herokuapp.com/api/meal-logs', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -49812,7 +49812,7 @@ function addMealToLog(mealLog) {
 }
 
 function drinkWater(logId) {
-  fetch('http://localhost:8080/api/water', {
+  fetch('https://macro-native-server.herokuapp.com/api/water', {
     method: 'PUT',
     headers: {
       'Accept': 'application/json',
@@ -50168,7 +50168,7 @@ var _AppDispatcher2 = babelHelpers.interopRequireDefault(_AppDispatcher);
 
 function addMealToLog(mealLog) {
   console.log(JSON.stringify(mealLog));
-  fetch('http://localhost:8080/api/meal-logs', {
+  fetch('https://macro-native-server.herokuapp.com/api/meal-logs', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -50197,7 +50197,7 @@ function removeMealFromLog(meal) {
 }
 
 function getMeals() {
-  fetch('http://localhost:8080/api/meals').then(function (res) {
+  fetch('https://macro-native-server.herokuapp.com/api/meals').then(function (res) {
     return res.json();
   }).then(function (response) {
     var meals = response;

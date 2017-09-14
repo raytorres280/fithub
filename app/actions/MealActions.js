@@ -2,7 +2,7 @@ import dispatcher from '../dispatcher/AppDispatcher';
 
 export function addMealToLog(mealLog) {
   //console.log(JSON.stringify(mealLog));
-  fetch('http://localhost:8080/api/meal-logs', {
+  fetch('https://macro-native-server.herokuapp.com/api/meal-logs', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -31,7 +31,7 @@ export function removeMealFromLog(meal) {
 }
 
 export function getMeals() {
-  fetch('http://localhost:8080/api/meals')
+  fetch('https://macro-native-server.herokuapp.com/api/meals')
   .then((res) => res.json())
   .then((response) => {
     let meals = response;

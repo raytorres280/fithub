@@ -5,7 +5,10 @@ import {
   Text,
   View,
   Image,
-  TabBarIOS
+  TabBarIOS,
+  Switch,
+  AppState,
+  AsyncStorage
 } from 'react-native';
 
 import Login from './Login';
@@ -28,6 +31,20 @@ export default class AppComponent extends Component {
   }
 
   componentDidMount() {
+    AppState.addEventListener('change', (newState) => {
+      console.log('app state is changing...');
+      if (newState === 'active') {
+        console.log('app has come into foreground...');
+        AsyncStorage.getItem('user', (err, res) => {
+          console.log('getting item from async storange');
+          if (err) {
+            console.log(err);
+          }
+          console.log(res);
+        });
+      }
+    });
+
     AppStore.addListener('change', () => {
       let user = AppStore.getUser();
 

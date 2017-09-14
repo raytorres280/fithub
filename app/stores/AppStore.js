@@ -1,5 +1,5 @@
 import EventEmitter from 'EventEmitter';
-
+import {AsyncStorage} from 'react-native';
 import dispatcher from '../dispatcher/AppDispatcher';
 
 class AppStore extends EventEmitter {
@@ -20,6 +20,7 @@ class AppStore extends EventEmitter {
     this.isLoggedIn = false;
     this.loginFailed = false;
     this.date = new Date();
+    this.rememberLogin = false;
   }
 
   getUser() {
@@ -34,12 +35,15 @@ class AppStore extends EventEmitter {
     this.isLoggedIn = isLoggedIn;
   }
 
+  setRememberLogin(bool) {
+    this.rememberLogin = bool;
+  }
   getIsLoggedIn() {
     return this.isLoggedIn;
   }
 
   loginUser(user) {
-    fetch('http://localhost:8080/auth/login', {
+    fetch('https://macro-native-server.herokuapp.com/auth/login', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -52,9 +56,28 @@ class AppStore extends EventEmitter {
     })
     .then((res) => res.json())
     .then((resData) => {
+
+      //did you get a row back?
       if(resData.email) {
         this.setUser(resData);
         this.setIsLoggedIn(true);
+
+        //check if the user hit rememberLogin switch...
+        if (user.rememberLogin) {
+          console.log('user decided he wanted to save login info');
+
+          let usr = Object.assign({}, user);
+          // delete usr.rememberLogin;
+          console.log(usr);
+          AsyncStorage.setItem('user', JSON.stringify(usr), (err) => {
+            if(err) {
+              console.log(err);
+            }
+            else {
+              console.log('no err');
+            }
+          });
+        }
       }
       this.emit('change');
     })

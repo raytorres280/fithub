@@ -22,7 +22,7 @@ export function createLog() {
 }
 
 export function getLogs(user) {
-  fetch('http://localhost:8080/api/logs', {
+  fetch('https://macro-native-server.herokuapp.com/api/logs', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -45,7 +45,7 @@ export function getLogs(user) {
 }
 
 export function addMealToLog(mealLog) {
-  fetch('http://localhost:8080/api/meal-logs', {
+  fetch('https://macro-native-server.herokuapp.com/api/meal-logs', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -65,7 +65,7 @@ export function addMealToLog(mealLog) {
 }
 
 export function drinkWater(logId) {
-  fetch('http://localhost:8080/api/water', {
+  fetch('https://macro-native-server.herokuapp.com/api/water', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',

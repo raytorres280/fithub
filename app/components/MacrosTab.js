@@ -56,7 +56,7 @@ export default class MacrosTab extends Component {
   calcFats() {
     return this.state.log.total_fats / AppStore.getUser().daily_req_fats * 100;
   }
-  
+
   render() {
     let proteins = 0,
     carbs = 0,
@@ -75,6 +75,7 @@ export default class MacrosTab extends Component {
 
     return (
       <View style={styles.macrostab}>
+        <View style={styles.logo}><Text>FitHub</Text></View>
         <View style={styles.title}>
           <Text allowFontScaling={false} style={styles.ticker}>{calories}</Text>
         </View>
@@ -100,11 +101,6 @@ export default class MacrosTab extends Component {
             tintColor="#FC6"
             backgroundColor="#3d5875"
           />
-        </View>
-        <View style={styles.gaugeLabels}>
-          <Text>Protein</Text>
-          <Text>Carbs</Text>
-          <Text style={{paddingLeft: 25}}>Fats</Text>
         </View>
 
         <View style={styles.glassListContainer}>
@@ -221,6 +217,12 @@ const styles = StyleSheet.create({
     borderWidth: 10,
     borderRadius: 5,
     borderColor: 'deepskyblue',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  logo: {
+    height: 100,
+    backgroundColor: 'orange',
     justifyContent: 'center',
     alignItems: 'center'
   }

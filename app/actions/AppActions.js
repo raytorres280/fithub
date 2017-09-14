@@ -22,7 +22,7 @@ export function getUser() {
 
 export function createUser(user) {
   console.log('creating user...');
-  fetch('http://localhost:8080/auth/signUp', {
+  fetch('https://macro-native-server.herokuapp.com/auth/signUp', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',

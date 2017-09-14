@@ -23,7 +23,7 @@ export default class GlassFullIcon extends Component {
   }
 
   componentWillReceiveProps(newProp) {
-    console.log(newProp);
+    // console.log(newProp);
   }
 
   fillGlass() {
